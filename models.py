@@ -17,7 +17,6 @@ class School(enum.Enum):
 
 
 class Level(enum.Enum):
-    UNKNOWN = "Unknown"
     CANTRIP = "Cantrip"
     FIRST = "1st"
     SECOND = "2nd"

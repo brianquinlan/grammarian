@@ -1,9 +1,11 @@
 import argparse
+import asyncio
+import dataclasses
 import string
 import sys
 from typing import Generator
 
-from pydantic_ai import Agent, Tool
+from pydantic_ai import Agent, RunContext, Tool
 from pydantic_ai.models import Model
 from typing import TextIO
 from pydantic import BaseModel
@@ -61,14 +63,17 @@ has the effect that the user wants. All possible spell names will be provided
 by the given `spell_variations_as_dict` function.
 
 The function, level, school, duration and range of the original spell has no influence
-on the new spell. Determine the level, school, duration and range of the new spell
+on the new spell. Determine the school, duration and range of the new spell
 yourself based on the user's prompt and your knowledge of other Dungeons and Dragon's
-spells.
+spells. Determine the level of the new spell based on the `determine_level` function.
+If the prompt contains level constraints then you MUST use `determine_level` to determine
+the level of the new spell.
 
 The best approach is to start with all possible spells available to the owner of the ring
 and then use `spell_variations_as_dict` to generate all possible variations of those spells.
 It is important to generate as many variations as possible so provide as much input to
-`spell_variations_as_dict` as possible.
+`spell_variations_as_dict` as possible. If no spell restrictions are provide, ask for the
+variations for every spell in Dungeons & Dragons.
 
 Unless otherwise instructed, assume that the owner of the ring is able to use any spell
 available to their class from the Player's Handbook and other official sources.
@@ -79,6 +84,13 @@ terms of spell level, duration, and range.
 Unless otherwise specified, you should propose multiple spell variations.
 """
 
+_LEVELING_SYSTEM_PROMPT = """You are an expert designer of Dungeons & Dragons spells.
+
+You have an expert understanding of existing Dungeons & Dragons spells and
+can correctly determine the appropriate level for a new spell based on the
+precedent provided by existing spells.
+"""
+
 
 def single_letter_changes_for_word(word: str, allow_remove=False, allow_add=False):
     word = word.lower()
@@ -86,12 +98,12 @@ def single_letter_changes_for_word(word: str, allow_remove=False, allow_add=Fals
         if allow_remove:
             yield word[:i] + word[i + 1 :]
 
-        for l in _LETTERS:
-            if word[i] != l:
+        for letter in _LETTERS:
+            if word[i] != letter:
                 # Replace a letter
-                yield word[:i] + l + word[i + 1 :]
+                yield word[:i] + letter + word[i + 1 :]
                 if allow_add:
-                    yield word[:i] + l + word[i:]
+                    yield word[:i] + letter + word[i:]
 
 
 def single_letter_changes_for_text(text: str):
@@ -129,32 +141,54 @@ def spell_variations_as_dict(names: list[str]) -> dict[str, list[str]]:
     return {name: list(spell_variations(name)) for name in names}
 
 
-def find_spells(
+@dataclasses.dataclass
+class Dependencies:
+    agent: Agent
+
+
+async def determine_level(
+    ctx: RunContext[Dependencies], spell: models.Spell
+) -> models.Level:
+    """Determine the casting level of a spell based on the precedent provided by existing spells."""
+    json = spell.model_dump_json(exclude={"level"})
+    print(json)
+    response = await ctx.deps.agent.run(json)
+    print(f"{spell.name} should be level {response.output.value}")
+    return response.output
+
+
+async def find_spells(
     model: Model, description: str, name: str | None = None
 ) -> list[RingOfTheGrammarianSpell]:
+    leveling_agent = Agent(
+        model, system_prompt=_LEVELING_SYSTEM_PROMPT, output_type=models.Level
+    )
     agent = Agent(
         model,
         system_prompt=_SYSTEM_PROMPT,
         output_type=list[RingOfTheGrammarianSpell],
+        deps_type=Dependencies,
         tools=[
             Tool(spell_variations_as_dict, takes_ctx=False),
+            Tool(determine_level, takes_ctx=True),
         ],
     )
-    response = agent.run_sync(description)
+
+    response = await agent.run(description, deps=Dependencies(agent=leveling_agent))
 
     return response.output
 
 
-def main():
+async def main():
     parser = argparse.ArgumentParser(description="What the program does")
     parser.add_argument("-d", "--description")
     args = parser.parse_args()
     model = get_model()
 
-    for spell in find_spells(model, args.description):
+    for spell in await find_spells(model, args.description):
         spell.write_to_file(sys.stdout)
         sys.stdout.write("\n")
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
