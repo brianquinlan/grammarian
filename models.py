@@ -17,6 +17,7 @@ class School(enum.Enum):
 
 
 class Level(enum.Enum):
+    UNKNOWN = "Unknown"
     CANTRIP = "Cantrip"
     FIRST = "1st"
     SECOND = "2nd"
@@ -39,16 +40,17 @@ class Spell(BaseModel):
     duration: str
     description: str
 
-
     def foo(self, f: TextIO):
-        field = lambda t: colored(t, 'black', attrs=['bold']) if f.isatty else t
-        title = lambda t: colored(t, 'black', attrs=['bold']) if f.isatty else t
-        f.write(f'''{ title(self.name) } {self.school.value} {self.level.value}
+        def field(t):
+            return colored(t, "black", attrs=["bold"]) if f.isatty() else t
 
-{ field('Casting Time:') } {self.casting_time}
-{ field('Range:') } {self.range}
-{ field('Components:') } {self.components}
-{ field('Duration:') } {self.duration}
+        title = field
+        f.write(f"""{title(self.name)} {self.school.value} {self.level.value}
+
+{field("Casting Time:")} {self.casting_time}
+{field("Range:")} {self.range}
+{field("Components:")} {self.components}
+{field("Duration:")} {self.duration}
 
 {self.description}
-''')
+""")
