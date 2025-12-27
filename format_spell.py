@@ -1,5 +1,6 @@
 import argparse
 import sys
+import asyncio
 
 from pydantic_ai import Agent
 from pydantic_ai.models import Model
@@ -27,25 +28,23 @@ Description:
 """
 
 
-def format(
-    model:Model, description: str, name: str | None = None
-) -> models.Spell:
+async def format(model: Model, description: str) -> models.Spell:
     agent = Agent(model, output_type=models.Spell)
-    response = agent.run_sync(_PROMPT.format(description=description))
+    response = await agent.run(_PROMPT.format(description=description))
 
     return response.output
 
 
-def main():
+async def main():
     model = get_model()
 
     parser = argparse.ArgumentParser(description="What the program does")
     parser.add_argument("-d", "--description")
     args = parser.parse_args()
 
-    spell = format(model, args.description)
+    spell = await format(model, args.description)
     spell.foo(sys.stdout)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
