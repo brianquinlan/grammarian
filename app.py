@@ -9,7 +9,7 @@ _MODEL = get_model()
 app = Quart(__name__)
 
 
-@app.route("/format")
+@app.route("/format", methods=["GET"])
 async def format():
     description = request.args.get("description")
     spell = await format_spell.format(_MODEL, description)
