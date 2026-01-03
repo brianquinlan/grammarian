@@ -7,10 +7,7 @@ from typing import Generator
 
 from pydantic_ai import Agent, RunContext, Tool
 from pydantic_ai.models import Model
-from typing import TextIO
-from pydantic import BaseModel
 
-from termcolor import colored
 
 from model_factory import get_model
 
@@ -18,31 +15,6 @@ import models
 
 _LETTERS = string.ascii_lowercase
 _WORDS = set(w.lower().strip() for w in open("words.txt").readlines())
-
-
-class RingOfTheGrammarianSpell(BaseModel):
-    """The spell used to generate the new spell, e.g. "Cause Fear"."""
-
-    original_spell_name: str
-
-    """The spell that can be cast using the Ring of the Grammarian."""
-    grammarian_spell: models.Spell
-
-    def write_to_file(self, f: TextIO):
-        def field(t):
-            return colored(t, "black", attrs=["bold"]) if f.isatty() else t
-
-        title = field
-        f.write(f"""{title(self.grammarian_spell.name)} {self.grammarian_spell.school.value} {self.grammarian_spell.level.value}
-
-{field("Casting Time:")} {self.grammarian_spell.casting_time}
-{field("Range:")} {self.grammarian_spell.range}
-{field("Components:")} {self.grammarian_spell.components}
-{field("Duration:")} {self.grammarian_spell.duration}
-{field("Derived From:")} {self.original_spell_name}
-
-{self.grammarian_spell.description}
-""")
 
 
 _SYSTEM_PROMPT = """
@@ -159,14 +131,14 @@ async def determine_level(
 
 async def find_spells(
     model: Model, description: str, name: str | None = None
-) -> list[RingOfTheGrammarianSpell]:
+) -> list[models.RingOfTheGrammarianSpell]:
     leveling_agent = Agent(
         model, system_prompt=_LEVELING_SYSTEM_PROMPT, output_type=models.Level
     )
     agent = Agent(
         model,
         system_prompt=_SYSTEM_PROMPT,
-        output_type=list[RingOfTheGrammarianSpell],
+        output_type=list[models.RingOfTheGrammarianSpell],
         deps_type=Dependencies,
         tools=[
             Tool(spell_variations_as_dict, takes_ctx=False),

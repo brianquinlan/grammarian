@@ -39,7 +39,7 @@ class Spell(BaseModel):
     duration: str
     description: str
 
-    def foo(self, f: TextIO):
+    def write_to_file(self, f: TextIO):
         def field(t):
             return colored(t, "black", attrs=["bold"]) if f.isatty() else t
 
@@ -52,4 +52,29 @@ class Spell(BaseModel):
 {field("Duration:")} {self.duration}
 
 {self.description}
+""")
+
+
+class RingOfTheGrammarianSpell(BaseModel):
+    """The spell used to generate the new spell, e.g. "Cause Fear"."""
+
+    original_spell_name: str
+
+    """The spell that can be cast using the Ring of the Grammarian."""
+    grammarian_spell: Spell
+
+    def write_to_file(self, f: TextIO):
+        def field(t):
+            return colored(t, "black", attrs=["bold"]) if f.isatty() else t
+
+        title = field
+        f.write(f"""{title(self.grammarian_spell.name)} {self.grammarian_spell.school.value} {self.grammarian_spell.level.value}
+
+{field("Casting Time:")} {self.grammarian_spell.casting_time}
+{field("Range:")} {self.grammarian_spell.range}
+{field("Components:")} {self.grammarian_spell.components}
+{field("Duration:")} {self.grammarian_spell.duration}
+{field("Derived From:")} {self.original_spell_name}
+
+{self.grammarian_spell.description}
 """)

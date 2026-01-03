@@ -1,7 +1,8 @@
 from quart import request, Quart
 from model_factory import get_model
 import format_spell
-
+import grammarian
+from pydantic import TypeAdapter
 
 _MODEL = get_model()
 
@@ -14,6 +15,14 @@ async def format():
     spell = await format_spell.format(_MODEL, description)
     print(spell)
     return spell.model_dump_json()
+
+
+@app.route("/grammarian", methods=["GET"])
+async def _grammarian():
+    description = request.args.get("description")
+    spells = await grammarian.find_spells(_MODEL, description)
+    print(spells)
+    return TypeAdapter(list[grammarian.RingOfTheGrammarianSpell]).dump_json(spells)
 
 
 if __name__ == "__main__":
