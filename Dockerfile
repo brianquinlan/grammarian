@@ -23,6 +23,10 @@ COPY api /app/api
 # Copy built Flutter assets from Stage 1
 COPY --from=build /app/web/build/web /usr/share/nginx/html
 
+# Forward Nginx logs to docker log collector
+RUN ln -sf /dev/stdout /var/log/nginx/access.log \
+    && ln -sf /dev/stderr /var/log/nginx/error.log
+
 # Configure Nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Remove the default site configuration if it exists
