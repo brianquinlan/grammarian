@@ -1,4 +1,12 @@
 #!/bin/bash
+
+# Default to port 8080 if PORT is not set
+PORT="${PORT:-8080}"
+
+# Substitute the PORT in the Nginx configuration
+# We look for 'listen [0-9]*;' and replace it with 'listen $PORT;'
+sed -i "s/listen [0-9]*;/listen $PORT;/g" /etc/nginx/conf.d/default.conf
+
 # Start Nginx in the background
 nginx
 

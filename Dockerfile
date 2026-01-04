@@ -36,7 +36,7 @@ RUN chmod +x /app/start.sh
 WORKDIR /app/api
 
 # Expose port 80
-EXPOSE 80
+EXPOSE 8080
 
 # Start the application
 CMD ["/app/start.sh"]
