@@ -8,9 +8,11 @@ PORT="${PORT:-8080}"
 sed -i "s/listen [0-9]*;/listen $PORT;/g" /etc/nginx/conf.d/default.conf
 
 # Start Nginx in the background
+echo "Starting Nginx..."
 nginx
 
 # Start the Quart app using Hypercorn
 # We are binding to 0.0.0.0:5000 so the Nginx proxy can reach it via localhost:5000 (inside the container)
 # and we use exec to replace the shell process
+echo "Starting Hypercorn..."
 exec hypercorn app:app --bind 0.0.0.0:5000
