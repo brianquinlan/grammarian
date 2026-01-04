@@ -11,7 +11,7 @@ RUN flutter build web
 FROM python:3.11-slim
 
 # Install Nginx
-RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y nginx curl && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
 COPY api/requirements.txt /app/requirements.txt

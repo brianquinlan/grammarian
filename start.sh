@@ -7,12 +7,24 @@ PORT="${PORT:-8080}"
 # We look for 'listen [0-9]*;' and replace it with 'listen $PORT;'
 sed -i "s/listen [0-9]*;/listen $PORT;/g" /etc/nginx/conf.d/default.conf
 
-# Start Nginx in the background
-echo "Starting Nginx..."
-nginx
-
-# Start the Quart app using Hypercorn
-# We are binding to 0.0.0.0:5000 so the Nginx proxy can reach it via localhost:5000 (inside the container)
-# and we use exec to replace the shell process
+# Start Hypercorn in background
 echo "Starting Hypercorn..."
-exec hypercorn app:app --bind 0.0.0.0:5000
+hypercorn app:app --bind 0.0.0.0:5000 &
+HYPERCORN_PID=$!
+
+# Wait for Hypercorn to be ready
+echo "Waiting for Hypercorn to start..."
+# Loop until curl succeeds
+while ! curl -s http://127.0.0.1:5000/ > /dev/null; do
+    if ! kill -0 $HYPERCORN_PID 2>/dev/null; then
+        echo "Hypercorn process died."
+        exit 1
+    fi
+    echo "Hypercorn is not ready yet..."
+    sleep 0.2
+done
+echo "Hypercorn is ready."
+
+# Start Nginx in foreground
+echo "Starting Nginx..."
+exec nginx -g 'daemon off;'
