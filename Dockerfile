@@ -35,7 +35,7 @@ RUN chmod +x /app/start.sh
 # Set working directory for the Python app
 WORKDIR /app/api
 
-# Expose port 80
+# Expose port 8080
 EXPOSE 8080
 
 # Start the application
