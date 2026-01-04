@@ -3,7 +3,6 @@ from model_factory import get_model
 import format_spell
 import grammarian
 from pydantic import TypeAdapter
-import models
 
 _MODEL = get_model()
 
@@ -23,7 +22,7 @@ async def _grammarian():
     description = request.args.get("description")
     spells = await grammarian.find_spells(_MODEL, description)
     print(spells)
-    return TypeAdapter(list[models.RingOfTheGrammarianSpell]).dump_json(spells)
+    return TypeAdapter(list[grammarian.RingOfTheGrammarianSpell]).dump_json(spells)
 
 
 if __name__ == "__main__":
