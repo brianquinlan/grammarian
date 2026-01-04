@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:web/models.dart';
+import 'package:grammarian_web/models.dart';
 
 void main() {
   test('Parses spell JSON correctly', () {

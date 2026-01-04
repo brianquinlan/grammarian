@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:web/grammarian_client.dart';
-import 'package:web/models.dart';
+import 'package:grammarian_web/grammarian_client.dart';
+import 'package:grammarian_web/models.dart';
 
 class MockClient extends Fake implements http.Client {
   final Future<http.Response> Function(Uri url) handler;
