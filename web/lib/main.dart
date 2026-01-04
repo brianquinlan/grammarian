@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'grammarian_client.dart';
 import 'models.dart';
@@ -131,9 +132,41 @@ class SpellCard extends StatelessWidget {
             _buildStatGrid(context, grammarianSpell),
             const Divider(),
             const SizedBox(height: 8),
-            SelectableText(
-              grammarianSpell.description,
-              style: Theme.of(context).textTheme.bodyMedium,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: SelectableText(
+                    grammarianSpell.description,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.copy),
+                  tooltip: 'Copy Markdown',
+                  onPressed: () {
+                    final markdown =
+                        '''
+### ${grammarianSpell.name}
+*${grammarianSpell.level.jsonValue} ${grammarianSpell.school.jsonValue}*
+
+**Casting Time:** ${grammarianSpell.castingTime}
+**Range:** ${grammarianSpell.range}
+**Components:** ${grammarianSpell.components}
+**Duration:** ${grammarianSpell.duration}
+
+${grammarianSpell.description}
+''';
+                    Clipboard.setData(ClipboardData(text: markdown));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Copied to clipboard'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),
