@@ -131,7 +131,7 @@ class SpellCard extends StatelessWidget {
             _buildStatGrid(context, grammarianSpell),
             const Divider(),
             const SizedBox(height: 8),
-            Text(
+            SelectableText(
               grammarianSpell.description,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
