@@ -10,6 +10,12 @@ _MODEL = get_model()
 app = Quart(__name__)
 
 
+@app.after_request
+async def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    return response
+
+
 @app.route("/format", methods=["GET"])
 async def format():
     description = request.args.get("description")

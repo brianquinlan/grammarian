@@ -15,8 +15,9 @@ class GrammarianClient {
     final uri = Uri.parse(
       '$baseUrl/grammarian',
     ).replace(queryParameters: {'description': description});
-
+    print(uri);
     final response = await client.get(uri);
+    print(response.body);
 
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = jsonDecode(response.body);
