@@ -114,31 +114,14 @@ class SpellCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              grammarianSpell.name,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              '${grammarianSpell.level.jsonValue} ${grammarianSpell.school.jsonValue}',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontStyle: FontStyle.italic),
-            ),
-            const Divider(),
-            _buildStatGrid(context, grammarianSpell),
-            const Divider(),
-            const SizedBox(height: 8),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: SelectableText(
-                    grammarianSpell.description,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                Text(
+                  grammarianSpell.name,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
                 IconButton(
@@ -154,6 +137,7 @@ class SpellCard extends StatelessWidget {
 **Range:** ${grammarianSpell.range}
 **Components:** ${grammarianSpell.components}
 **Duration:** ${grammarianSpell.duration}
+**Original Spell:** ${spell.originalSpellName}
 
 ${grammarianSpell.description}
 ''';
@@ -168,19 +152,36 @@ ${grammarianSpell.description}
                 ),
               ],
             ),
+            const SizedBox(height: 4),
+            Text(
+              '${grammarianSpell.level.jsonValue} ${grammarianSpell.school.jsonValue}',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontStyle: FontStyle.italic),
+            ),
+            const Divider(),
+            _buildStatGrid(context, spell),
+            const Divider(),
+            const SizedBox(height: 8),
+            SelectableText(
+              grammarianSpell.description,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildStatGrid(BuildContext context, Spell spell) {
+  Widget _buildStatGrid(BuildContext context, RingOfTheGrammarianSpell spell) {
+    final gSpell = spell.grammarianSpell;
     return Column(
       children: [
-        _buildStatRow('Casting Time', spell.castingTime),
-        _buildStatRow('Range', spell.range),
-        _buildStatRow('Components', spell.components),
-        _buildStatRow('Duration', spell.duration),
+        _buildStatRow('Casting Time', gSpell.castingTime),
+        _buildStatRow('Range', gSpell.range),
+        _buildStatRow('Components', gSpell.components),
+        _buildStatRow('Duration', gSpell.duration),
+        _buildStatRow('Original Spell', spell.originalSpellName),
       ],
     );
   }

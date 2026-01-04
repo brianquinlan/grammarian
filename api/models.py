@@ -1,6 +1,7 @@
 import enum
 from typing import TextIO
 
+from dataclasses import Field
 from termcolor import colored
 from pydantic import BaseModel
 
@@ -36,6 +37,12 @@ class Spell(BaseModel):
     casting_time: str
     range: str
     components: str
+
+    """
+    The duration of the spell.
+
+    For example, 'Concentration, up to 1 minute' or 'Instantaneous'.
+    """
     duration: str
     description: str
 

@@ -51,7 +51,8 @@ Unless otherwise instructed, assume that the owner of the ring is able to use an
 available to their class from the Player's Handbook and other official sources.
 
 Make sure that proposed spells are consistent with existing Dungeons and Dragons spells in
-terms of spell level, duration, and range. 
+terms of spell level, duration, and range. In the description, make sure to include the what
+effect upcasting the spell has or, if it is a cantrip, what it does at higher levels.
 
 Unless otherwise specified, you should propose multiple spell variations.
 """
@@ -122,7 +123,7 @@ async def determine_level(
     ctx: RunContext[Dependencies], spell: models.Spell
 ) -> models.Level:
     """Determine the casting level of a spell based on the precedent provided by existing spells."""
-    json = spell.model_dump_json(exclude={"level"})
+    json = spell.model_dump_json(exclude={"level", "name"})
     print(json)
     response = await ctx.deps.agent.run(json)
     print(f"{spell.name} should be level {response.output.value}")
