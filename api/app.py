@@ -31,10 +31,13 @@ async def format():
 @app.route("/conversations", methods=["GET"])
 async def conversations():
     summaries = [
-        models.ConversationSummary(conversation_id=c.conversation_id, name=c.name)
+        models.ConversationSummary(
+            conversation_id=c.conversation_id, name=c.name, created_on=c.created_on
+        )
         for c in storage.get_conversations()
     ]
 
+    summaries.sort(key=lambda c: c.created_on)
     return (
         models.ListConversationsResponse(conversations=summaries).model_dump_json(),
         200,
@@ -64,8 +67,11 @@ async def prompt():
     description = request.args.get("description")
     if description is None:
         raise Exception("no description")
-    title = await titler.title_conversation(_MODEL, description=description, 
-                                            existing_titles=[c.name for c in storage.get_conversations()])
+    title = await titler.title_conversation(
+        _MODEL,
+        description=description,
+        existing_titles=[c.name for c in storage.get_conversations()],
+    )
     all_messages, spells = await find_spells(
         _MODEL, description, conversation.all_messages
     )

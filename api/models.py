@@ -1,11 +1,10 @@
 import enum
 from typing import TextIO
 
-from dataclasses import field
 from pydantic_ai import ModelMessage
 from termcolor import colored
-from pydantic import BaseModel
-
+from pydantic import BaseModel, Field
+import datetime
 
 class School(enum.Enum):
     ABJURATION = "Abjuration"
@@ -91,10 +90,11 @@ class UserPrompt(BaseModel):
     text: str
 
 class AppResponse(BaseModel):
-    spells: list[RingOfTheGrammarianSpell] = field(default_factory=list)
+    spells: list[RingOfTheGrammarianSpell] = Field(default_factory=list)
 
 class Conversation(BaseModel):
     conversation_id: str
+    created_on: datetime.datetime = Field(default_factory=datetime.datetime.now)
     name: str = ''
     model: str = ''
     all_messages : list[ModelMessage] = []
@@ -104,6 +104,7 @@ class Conversation(BaseModel):
 
 class ConversationSummary(BaseModel):
     conversation_id: str
+    created_on: datetime.datetime
     name: str
 
 class ListConversationsResponse(BaseModel):
@@ -111,5 +112,5 @@ class ListConversationsResponse(BaseModel):
 
 class PromptResponse(BaseModel):
     conversation_id: str
-    spells: list[RingOfTheGrammarianSpell] = field(default_factory=list)
+    spells: list[RingOfTheGrammarianSpell] = Field(default_factory=list)
 
