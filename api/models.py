@@ -1,7 +1,8 @@
 import enum
 from typing import TextIO
 
-from dataclasses import Field
+from dataclasses import field
+from pydantic_ai import ModelMessage
 from termcolor import colored
 from pydantic import BaseModel
 
@@ -85,3 +86,21 @@ class RingOfTheGrammarianSpell(BaseModel):
 
 {self.grammarian_spell.description}
 """)
+
+
+class ConversationResponse(BaseModel):
+    conversation_id: str
+    spells: list[RingOfTheGrammarianSpell] = field(default_factory=list)
+
+
+class UserPrompt(BaseModel):
+    text: str
+
+class AppResponse(BaseModel):
+    spells: list[RingOfTheGrammarianSpell] = field(default_factory=list)
+
+class Conversation(BaseModel):
+    conversation_id: str
+    model: str = ''
+    all_messages : list[ModelMessage] = []
+    dialog: list[UserPrompt | AppResponse] = []

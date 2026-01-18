@@ -3,9 +3,9 @@ import asyncio
 import dataclasses
 import string
 import sys
-from typing import Generator
+from typing import Generator, Tuple
 
-from pydantic_ai import Agent, RunContext, Tool
+from pydantic_ai import Agent, ModelMessage, RunContext, Tool
 from pydantic_ai.models import Model
 
 
@@ -116,7 +116,7 @@ def spell_variations_as_dict(names: list[str]) -> dict[str, list[str]]:
 
 @dataclasses.dataclass
 class Dependencies:
-    agent: Agent
+    agent: Agent[None, models.Level]
 
 
 async def determine_level(
@@ -131,10 +131,11 @@ async def determine_level(
 
 
 async def find_spells(
-    model: Model, description: str, name: str | None = None
-) -> list[models.RingOfTheGrammarianSpell]:
+    model: Model, description: str,
+    model_messages : list[ModelMessage] | None = [],
+) -> Tuple[list[ModelMessage], list[models.RingOfTheGrammarianSpell]]:
     leveling_agent = Agent(
-        model, system_prompt=_LEVELING_SYSTEM_PROMPT, output_type=models.Level
+        model, system_prompt=_LEVELING_SYSTEM_PROMPT, output_type=models.Level,
     )
     agent = Agent(
         model,
@@ -147,9 +148,10 @@ async def find_spells(
         ],
     )
 
-    response = await agent.run(description, deps=Dependencies(agent=leveling_agent))
-
-    return response.output
+    response = await agent.run(description,
+                               message_history=model_messages,
+                               deps=Dependencies(agent=leveling_agent))
+    return response.all_messages(), response.output
 
 
 async def main():

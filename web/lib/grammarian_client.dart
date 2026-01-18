@@ -8,7 +8,7 @@ class GrammarianClient {
 
   GrammarianClient({
     required this.client,
-    this.baseUrl = '/api',
+    this.baseUrl = 'http://127.0.0.1:5000/api',
   });
 
   Future<List<RingOfTheGrammarianSpell>> findSpells(String description) async {
