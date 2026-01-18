@@ -18,7 +18,7 @@ void main() {
   test('findSpells returns list of spells on 200', () async {
     final client = MockClient((url) async {
       // Check correct URL and params
-      if (url.path == '/grammarian' &&
+      if (url.path == '/api/prompt' &&
           url.queryParameters['description'] == 'test') {
         return http.Response(
           jsonEncode([
@@ -43,12 +43,12 @@ void main() {
     });
 
     final grammarianClient = GrammarianClient(client: client);
-    final spells = await grammarianClient.findSpells('test');
+    final response = await grammarianClient.prompt('test');
 
-    expect(spells, isA<List<RingOfTheGrammarianSpell>>());
-    expect(spells.length, 1);
-    expect(spells.first.originalSpellName, 'Test Spell');
-    expect(spells.first.grammarianSpell.name, 'Test Spell');
+    expect(response, isA<PromptResponse>());
+    expect(response.spells.length, 1);
+    expect(response.spells.first.originalSpellName, 'Test Spell');
+    expect(response.spells.first.grammarianSpell.name, 'Test Spell');
   });
 
   test('findSpells throws exception on non-200', () async {
@@ -58,6 +58,6 @@ void main() {
 
     final grammarianClient = GrammarianClient(client: client);
 
-    expect(grammarianClient.findSpells('test'), throwsException);
+    expect(grammarianClient.prompt('test'), throwsException);
   });
 }

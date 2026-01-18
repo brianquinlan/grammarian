@@ -45,9 +45,9 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     try {
-      final spells = await _client.findSpells(description);
+      final response = await _client.prompt(description);
       setState(() {
-        _spells = spells;
+        _spells = response.spells;
       });
     } catch (e) {
       print('Error finding spells: $e');

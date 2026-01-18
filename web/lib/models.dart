@@ -103,3 +103,19 @@ class RingOfTheGrammarianSpell {
         .toList();
   }
 }
+
+class PromptResponse {
+  final String conversationId;
+  final List<RingOfTheGrammarianSpell> spells;
+
+  PromptResponse({required this.conversationId, required this.spells});
+
+  factory PromptResponse.fromJson(Map<String, dynamic> json) {
+    return PromptResponse(
+      conversationId: json['conversation_id'] as String,
+      spells: RingOfTheGrammarianSpell.listFromJson(
+        json['spells'] as List<dynamic>,
+      ),
+    );
+  }
+}

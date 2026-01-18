@@ -87,12 +87,6 @@ class RingOfTheGrammarianSpell(BaseModel):
 {self.grammarian_spell.description}
 """)
 
-
-class PromptResponse(BaseModel):
-    conversation_id: str
-    spells: list[RingOfTheGrammarianSpell] = field(default_factory=list)
-
-
 class UserPrompt(BaseModel):
     text: str
 
@@ -101,6 +95,21 @@ class AppResponse(BaseModel):
 
 class Conversation(BaseModel):
     conversation_id: str
+    name: str = ''
     model: str = ''
     all_messages : list[ModelMessage] = []
     dialog: list[UserPrompt | AppResponse] = []
+
+# API results
+
+class ConversationSummary(BaseModel):
+    conversation_id: str
+    name: str
+
+class ListConversationsResponse(BaseModel):
+    conversations: list[ConversationSummary]
+
+class PromptResponse(BaseModel):
+    conversation_id: str
+    spells: list[RingOfTheGrammarianSpell] = field(default_factory=list)
+

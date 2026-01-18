@@ -1,4 +1,4 @@
-from typing import cast
+from typing import Generator, cast
 from google.cloud import firestore
 import models
 
@@ -11,12 +11,15 @@ def _get_client() -> firestore.Client:
         _client = firestore.Client()
     return _client
 
-
-def _get_conversations():
+def _get_conversations() -> firestore.CollectionReference:
     global _conversations
     if _conversations is None:
         _conversations = _get_client().collection("conversations")
     return _conversations
+
+def get_conversations() -> Generator[models.Conversation, None, None]:
+    for c in _get_conversations().stream():
+        yield models.Conversation.model_validate(c.to_dict())
 
 def get_conversation(conversation_id: str) -> models.Conversation:
     conversations = _get_conversations()
