@@ -5,6 +5,7 @@ import string
 import sys
 from typing import Generator, Tuple
 
+from pydantic import constr
 from pydantic_ai import Agent, ModelMessage, RunContext, Tool
 from pydantic_ai.models import Model
 

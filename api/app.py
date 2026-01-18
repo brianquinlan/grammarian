@@ -5,6 +5,7 @@ import grammarian
 import fake_grammarian
 import storage
 import models
+import titler
 
 import uuid
 
@@ -63,10 +64,12 @@ async def prompt():
     description = request.args.get("description")
     if description is None:
         raise Exception("no description")
+    title = await titler.title_conversation(_MODEL, description=description, 
+                                            existing_titles=[c.name for c in storage.get_conversations()])
     all_messages, spells = await find_spells(
         _MODEL, description, conversation.all_messages
     )
-    conversation.name = 'This is a name'
+    conversation.name = title
     conversation.all_messages = all_messages
     conversation.dialog.extend(
         [models.UserPrompt(text=description), models.AppResponse(spells=spells)]
