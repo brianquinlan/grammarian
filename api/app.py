@@ -27,8 +27,13 @@ async def format():
     return spell.model_dump_json()
 
 
-@app.route("/grammarian", methods=["GET", "POST"])
-async def _grammarian():
+@app.route('/conversation/<conversation_id>', methods=["GET"])
+async def conversation(conversation_id: str):
+    conversation = storage.get_conversation(conversation_id)
+    return conversation.model_dump_json(), 200, {'Content-Type': 'application/json'}
+
+@app.route("/prompt", methods=["GET", "POST"])
+async def prompt():
     conversation_id = request.args.get("conversation_id")
     if not conversation_id:
         conversation = models.Conversation(conversation_id=str(uuid.uuid4()))
@@ -52,7 +57,7 @@ async def _grammarian():
     storage.save_conversation(conversation)
 
     
-    response = models.ConversationResponse(conversation_id=conversation.conversation_id, spells=spells)
+    response = models.PromptResponse(conversation_id=conversation.conversation_id, spells=spells)
     return response.model_dump_json(), 200, {'Content-Type': 'application/json'}
 
 

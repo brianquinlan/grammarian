@@ -88,7 +88,7 @@ class RingOfTheGrammarianSpell(BaseModel):
 """)
 
 
-class ConversationResponse(BaseModel):
+class PromptResponse(BaseModel):
     conversation_id: str
     spells: list[RingOfTheGrammarianSpell] = field(default_factory=list)
 
