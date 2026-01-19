@@ -627,36 +627,26 @@ class InputArea extends StatelessWidget {
                  BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, 4)),
               ],
             ),
-            child: Column(
-              children: [
-                TextField(
-                  controller: controller,
-                  enabled: !isLoading,
-                  maxLines: 4,
-                  minLines: 1,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                    hintText: 'Ask for a spell, describe a scenario, or check rules...',
-                    hintStyle: TextStyle(color: AppColors.textGray),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.all(16),
-                  ),
-                  onSubmitted: onSubmit,
+            child: CallbackShortcuts(
+              bindings: {
+                const SingleActivator(LogicalKeyboardKey.enter): () {
+                  if (!isLoading) onSubmit(controller.text);
+                },
+              },
+              child: TextField(
+                controller: controller,
+                enabled: !isLoading,
+                maxLines: 4,
+                minLines: 1,
+                style: const TextStyle(color: Colors.white),
+                decoration: const InputDecoration(
+                  hintText: 'Ask for a spell, describe a scenario, or check rules...',
+                  hintStyle: TextStyle(color: AppColors.textGray),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.all(16),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 12, right: 12, bottom: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Spacer(),
-                      IconButton(
-                        onPressed: isLoading ? null : () => onSubmit(controller.text),
-                        icon: Icon(Icons.send, color: isLoading ? AppColors.textGray : AppColors.primary),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                onSubmitted: onSubmit,
+              ),
             ),
           ),
         ),
