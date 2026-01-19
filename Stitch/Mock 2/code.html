@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Grammarian Sage</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7f13ec",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#131117",
+                        "surface-dark": "#1e1a24",
+                        "surface-card": "#251e30",
+                        "surface-border": "#3b3047",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["monospace"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3b3047;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5a4b6b;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .mask-gradient {
+            mask-image: linear-gradient(to right, black 90%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, black 90%, transparent 100%);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white h-screen flex flex-col overflow-hidden selection:bg-primary/30">
+<header class="flex shrink-0 items-center justify-between whitespace-nowrap border-b border-surface-border bg-background-dark/80 backdrop-blur-md px-6 py-3 z-30">
+<div class="flex items-center gap-4 text-white">
+<div class="size-9 flex items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-indigo-500/10 text-primary border border-primary/20">
+<span class="material-symbols-outlined text-2xl">swords</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-tight">Grammarian Sage</h2>
+</div>
+<div class="flex items-center gap-6 relative group">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-9 border border-surface-border ring-2 ring-transparent hover:ring-primary/50 transition-all cursor-pointer" data-alt="User avatar profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuACks_WUrkdX_ImH6mLDX62owFNxeaii6I922PQKPMpcq_q1LLViVJ0cAehb16Xc4i6uNHv91-GTLUFiY8W6pyUicAgw6wMQRTYE5K3x_TYLIVTb10RB1juqgdp01oI6RCbd7_DcQVTyPAiBSoZBLzokaWCRi34Wy74klIZFa5UbL4i4NEurFadOSlO1jTnGkASj0CNH3sU7GyoXjcLiJ3vpqdipoASJ0ZcHcXsIFLAFnulXnR60QSt6bHXQQljatP65BlNtrVxGw");'></div>
+<div class="absolute right-0 top-full mt-2 w-32 bg-surface-card border border-surface-border rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+<button class="w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">logout</span>
+        Log out
+    </button>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<aside class="w-[280px] bg-[#0e0c11] border-r border-surface-border flex-col hidden md:flex shrink-0 z-20">
+<div class="p-4">
+<button class="flex items-center gap-3 w-full px-3 py-2.5 bg-surface-card hover:bg-[#2d2438] border border-surface-border rounded-xl text-sm text-gray-200 transition-all shadow-sm group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">add</span>
+<span>New Scenario</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto px-2 space-y-6">
+<div>
+<h3 class="px-3 text-xs font-semibold text-[#554b60] uppercase tracking-wider mb-2">Today</h3>
+<div class="space-y-0.5">
+<button class="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-white bg-surface-border/40 rounded-lg border border-surface-border/50">
+<span class="material-symbols-outlined text-[18px] text-white">chat_bubble</span>
+<span class="truncate">Cleric Lvl 5 Spells</span>
+</button>
+</div>
+</div>
+<div>
+<h3 class="px-3 text-xs font-semibold text-[#554b60] uppercase tracking-wider mb-2">Yesterday</h3>
+<div class="space-y-0.5">
+<button class="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-[#ab9db9] hover:text-white hover:bg-white/5 rounded-lg transition-colors group">
+<span class="material-symbols-outlined text-[18px] text-[#554b60] group-hover:text-[#ab9db9] transition-colors">chat_bubble_outline</span>
+<span class="truncate">Curse of Strahd Prep</span>
+</button>
+<button class="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-[#ab9db9] hover:text-white hover:bg-white/5 rounded-lg transition-colors group">
+<span class="material-symbols-outlined text-[18px] text-[#554b60] group-hover:text-[#ab9db9] transition-colors">chat_bubble_outline</span>
+<span class="truncate">Backstory: Kaelen</span>
+</button>
+</div>
+</div>
+<div>
+<h3 class="px-3 text-xs font-semibold text-[#554b60] uppercase tracking-wider mb-2">Previous 30 Days</h3>
+<div class="space-y-0.5">
+<button class="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-[#ab9db9] hover:text-white hover:bg-white/5 rounded-lg transition-colors group">
+<span class="material-symbols-outlined text-[18px] text-[#554b60] group-hover:text-[#ab9db9] transition-colors">chat_bubble_outline</span>
+<span class="truncate">Rules: Grappling</span>
+</button>
+<button class="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-[#ab9db9] hover:text-white hover:bg-white/5 rounded-lg transition-colors group">
+<span class="material-symbols-outlined text-[18px] text-[#554b60] group-hover:text-[#ab9db9] transition-colors">chat_bubble_outline</span>
+<span class="truncate">Loot Generator</span>
+</button>
+<button class="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-[#ab9db9] hover:text-white hover:bg-white/5 rounded-lg transition-colors group">
+<span class="material-symbols-outlined text-[18px] text-[#554b60] group-hover:text-[#ab9db9] transition-colors">chat_bubble_outline</span>
+<span class="truncate">Wild Magic Table</span>
+</button>
+</div>
+</div>
+</div>
+</aside>
+<main class="flex flex-1 flex-col overflow-hidden relative min-w-0 bg-[#131117]">
+<div class="flex-1 overflow-y-auto scroll-smooth w-full">
+<div class="max-w-4xl mx-auto w-full flex flex-col px-4 py-8 space-y-10 pb-12">
+<div class="flex items-start gap-4">
+<div class="flex items-center justify-center rounded-full size-8 shrink-0 bg-gradient-to-br from-primary to-indigo-600 text-white shadow-lg shadow-primary/20 mt-1" data-alt="AI assistant avatar">
+<span class="material-symbols-outlined text-sm">smart_toy</span>
+</div>
+<div class="flex flex-1 flex-col gap-1.5 items-start max-w-2xl">
+<div class="flex items-baseline gap-2">
+<span class="text-white font-semibold text-sm">The Sage</span>
+</div>
+<div class="text-[15px] font-normal leading-relaxed text-[#e2e8f0]">
+                                Greetings, adventurer. I am your arcane assistant. Tell me about your character, or ask for a specific spell to begin your journey.
+                            </div>
+</div>
+</div>
+<div class="flex items-start gap-4 flex-row-reverse">
+<div class="flex flex-1 flex-col gap-1.5 items-end max-w-2xl">
+<div class="text-[15px] font-normal leading-relaxed rounded-2xl rounded-tr-sm px-5 py-3.5 bg-surface-card border border-surface-border text-gray-100 shadow-sm">
+                                I'm a Level 5 Cleric looking for healing and utility spells. What do you recommend?
+                            </div>
+</div>
+</div>
+<div class="flex items-start gap-4 w-full">
+<div class="flex items-center justify-center rounded-full size-8 shrink-0 bg-gradient-to-br from-primary to-indigo-600 text-white shadow-lg shadow-primary/20 mt-1" data-alt="AI assistant avatar">
+<span class="material-symbols-outlined text-sm">smart_toy</span>
+</div>
+<div class="flex flex-1 flex-col gap-1.5 items-start overflow-hidden w-full">
+<div class="flex items-baseline gap-2">
+<span class="text-white font-semibold text-sm">The Sage</span>
+</div>
+<div class="text-[15px] font-normal leading-relaxed text-[#e2e8f0] max-w-2xl mb-2">
+<p>For a Level 5 Cleric, you have access to 3rd-level spells, which are quite potent. Here are some excellent divine options suitable for your level. <strong>Mass Healing Word</strong> is particularly useful for stabilizing multiple allies, while <strong>Spirit Guardians</strong> is a staple for battlefield control.</p>
+</div>
+<div class="w-full mt-2">
+<div class="flex gap-4 w-full overflow-x-auto pb-4 snap-x">
+<div class="min-w-[300px] w-[300px] shrink-0 snap-start group relative flex flex-col gap-4 rounded-xl bg-surface-card p-4 border border-surface-border hover:border-primary/50 transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-primary/5">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-[#3b3047] flex items-center justify-center text-blue-300 shrink-0">
+<span class="material-symbols-outlined">healing</span>
+</div>
+<div class="min-w-0">
+<h3 class="text-white font-bold text-base leading-tight truncate">Mass Healing Word</h3>
+<span class="text-primary text-[10px] font-bold tracking-wide uppercase">Level 3 Evocation</span>
+</div>
+</div>
+<div class="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1.5 text-[11px] text-[#e2e8f0] leading-tight">
+<span class="font-medium text-[#ab9db9]">Casting Time:</span>
+<span>1 bonus action</span>
+<span class="font-medium text-[#ab9db9]">Range:</span>
+<span>60 feet</span>
+<span class="font-medium text-[#ab9db9]">Components:</span>
+<span>V</span>
+<span class="font-medium text-[#ab9db9]">Duration:</span>
+<span>Instantaneous</span>
+</div>
+<p class="text-[#d0c6dc] text-xs leading-relaxed line-clamp-2 border-t border-surface-border/50 pt-3">
+                                            Up to six creatures of your choice that you can see within range regain hit points equal to 1d4 + your spellcasting ability modifier.
+                                        </p>
+</div>
+<div class="min-w-[300px] w-[300px] shrink-0 snap-start group relative flex flex-col gap-4 rounded-xl bg-surface-card p-4 border border-surface-border hover:border-primary/50 transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-primary/5">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-[#3b3047] flex items-center justify-center text-yellow-200 shrink-0">
+<span class="material-symbols-outlined">light_mode</span>
+</div>
+<div class="min-w-0">
+<h3 class="text-white font-bold text-base leading-tight truncate">Spirit Guardians</h3>
+<span class="text-yellow-400 text-[10px] font-bold tracking-wide uppercase">Level 3 Conjuration</span>
+</div>
+</div>
+<div class="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1.5 text-[11px] text-[#e2e8f0] leading-tight">
+<span class="font-medium text-[#ab9db9]">Casting Time:</span>
+<span>1 action</span>
+<span class="font-medium text-[#ab9db9]">Range:</span>
+<span>Self (15-foot radius)</span>
+<span class="font-medium text-[#ab9db9]">Components:</span>
+<span>V, S, M</span>
+<span class="font-medium text-[#ab9db9]">Duration:</span>
+<span class="text-red-300">Conc. up to 10 mins</span>
+</div>
+<p class="text-[#d0c6dc] text-xs leading-relaxed line-clamp-2 border-t border-surface-border/50 pt-3">
+                                            You call forth spirits to protect you. They flit around you to a distance of 15 feet for the duration, damaging enemies.
+                                        </p>
+</div>
+<div class="min-w-[300px] w-[300px] shrink-0 snap-start group relative flex flex-col gap-4 rounded-xl bg-surface-card p-4 border border-surface-border hover:border-primary/50 transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-primary/5">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-[#3b3047] flex items-center justify-center text-purple-300 shrink-0">
+<span class="material-symbols-outlined">medical_services</span>
+</div>
+<div class="min-w-0">
+<h3 class="text-white font-bold text-base leading-tight truncate">Revivify</h3>
+<span class="text-purple-400 text-[10px] font-bold tracking-wide uppercase">Level 3 Necromancy</span>
+</div>
+</div>
+<div class="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1.5 text-[11px] text-[#e2e8f0] leading-tight">
+<span class="font-medium text-[#ab9db9]">Casting Time:</span>
+<span>1 action</span>
+<span class="font-medium text-[#ab9db9]">Range:</span>
+<span>Touch</span>
+<span class="font-medium text-[#ab9db9]">Components:</span>
+<span>V, S, M (300gp)</span>
+<span class="font-medium text-[#ab9db9]">Duration:</span>
+<span>Instantaneous</span>
+</div>
+<p class="text-[#d0c6dc] text-xs leading-relaxed line-clamp-2 border-t border-surface-border/50 pt-3">
+                                            Touch a creature that has died within the last minute. That creature returns to life with 1 hit point.
+                                        </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-start gap-4 flex-row-reverse">
+<div class="flex flex-1 flex-col gap-1.5 items-end max-w-2xl">
+<div class="text-[15px] font-normal leading-relaxed rounded-2xl rounded-tr-sm px-5 py-3.5 bg-surface-card border border-surface-border text-gray-100 shadow-sm">
+                                Do you have anything more aggressive? Maybe something with radiant damage?
+                            </div>
+</div>
+</div>
+<div class="flex items-end gap-4 opacity-60">
+<div class="flex items-center justify-center rounded-full size-8 shrink-0 bg-gradient-to-br from-primary to-indigo-600 text-white">
+<span class="material-symbols-outlined text-sm">smart_toy</span>
+</div>
+<div class="flex items-center gap-1 h-10 px-4 bg-surface-card rounded-2xl rounded-bl-sm border border-surface-border">
+<div class="w-1.5 h-1.5 bg-white rounded-full animate-bounce"></div>
+<div class="w-1.5 h-1.5 bg-white rounded-full animate-bounce delay-75"></div>
+<div class="w-1.5 h-1.5 bg-white rounded-full animate-bounce delay-150"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-[#131117] p-4 shrink-0 relative z-20">
+<div class="absolute -top-12 left-0 w-full h-12 bg-gradient-to-t from-[#131117] to-transparent pointer-events-none"></div>
+<div class="max-w-3xl mx-auto w-full">
+<label class="flex flex-col w-full">
+<div class="relative flex w-full flex-col rounded-3xl bg-surface-card border border-surface-border focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20 transition-all shadow-lg overflow-hidden">
+<textarea class="form-input w-full bg-transparent border-none text-white placeholder:text-[#ab9db9] focus:ring-0 px-4 py-3 resize-none max-h-48 text-[15px]" placeholder="Ask for a spell, describe a scenario, or check rules..." rows="1"></textarea>
+<div class="flex items-center justify-between px-3 pb-2">
+<div class="flex-1"></div>
+<div class="flex items-center gap-2">
+<div class="relative inline-block text-left">
+<button class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-[#3b3047]/50 px-3 py-1.5 text-xs font-semibold text-white shadow-sm ring-1 ring-inset ring-surface-border hover:bg-[#3b3047] transition-colors" id="menu-button" type="button">
+            Sage 1.0
+            <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</label>
+</div>
+</div>
+</main>
+</div>
+</body></html>
