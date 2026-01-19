@@ -163,9 +163,12 @@ class _MainLayoutState extends State<MainLayout> {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) _client.authToken = await user.getIdToken();
-      
-      final response = await _client.prompt(text, conversationId: _currentConversationId);
-      
+
+      final response = await _client.prompt(
+        text,
+        conversationId: _currentConversationId,
+      );
+
       if (_currentConversationId == null) {
         await _loadConversations();
         _currentConversationId = response.conversationId;
@@ -182,7 +185,9 @@ class _MainLayoutState extends State<MainLayout> {
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -248,7 +253,9 @@ class TopHeader extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       decoration: BoxDecoration(
         color: AppColors.backgroundDark.withOpacity(0.8),
-        border: const Border(bottom: BorderSide(color: AppColors.surfaceBorder)),
+        border: const Border(
+          bottom: BorderSide(color: AppColors.surfaceBorder),
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -263,7 +270,11 @@ class TopHeader extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: AppColors.primary.withOpacity(0.2)),
                 ),
-                child: const Icon(Icons.shield, color: AppColors.primary, size: 20),
+                child: const Icon(
+                  Icons.shield,
+                  color: AppColors.primary,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 16),
               Text(
@@ -277,7 +288,7 @@ class TopHeader extends StatelessWidget {
             ],
           ),
           if (user != null)
-             PopupMenuButton(
+            PopupMenuButton(
               offset: const Offset(0, 48),
               color: AppColors.surfaceCard,
               shape: RoundedRectangleBorder(
@@ -287,10 +298,16 @@ class TopHeader extends StatelessWidget {
               child: CircleAvatar(
                 radius: 18,
                 backgroundColor: AppColors.surfaceBorder,
-                backgroundImage: user.photoURL != null ? NetworkImage(user.photoURL!) : null,
-                child: user.photoURL == null 
-                  ? const Icon(Icons.person, size: 20, color: AppColors.textGray) 
-                  : null,
+                backgroundImage: user.photoURL != null
+                    ? NetworkImage(user.photoURL!)
+                    : null,
+                child: user.photoURL == null
+                    ? const Icon(
+                        Icons.person,
+                        size: 20,
+                        color: AppColors.textGray,
+                      )
+                    : null,
               ),
               itemBuilder: (context) => [
                 PopupMenuItem(
@@ -299,7 +316,10 @@ class TopHeader extends StatelessWidget {
                     children: [
                       Icon(Icons.logout, size: 18, color: AppColors.textGray),
                       SizedBox(width: 8),
-                      Text('Log out', style: TextStyle(color: AppColors.textGray)),
+                      Text(
+                        'Log out',
+                        style: TextStyle(color: AppColors.textGray),
+                      ),
                     ],
                   ),
                 ),
@@ -329,8 +349,14 @@ class Sidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     // Group conversations (simplification)
     final now = DateTime.now();
-    final today = conversations.where((c) => 
-      c.createdOn.year == now.year && c.createdOn.month == now.month && c.createdOn.day == now.day).toList();
+    final today = conversations
+        .where(
+          (c) =>
+              c.createdOn.year == now.year &&
+              c.createdOn.month == now.month &&
+              c.createdOn.day == now.day,
+        )
+        .toList();
     final others = conversations.where((c) => !today.contains(c)).toList();
 
     return Container(
@@ -346,7 +372,10 @@ class Sidebar extends StatelessWidget {
               onTap: onNew,
               borderRadius: BorderRadius.circular(12),
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 12,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.surfaceCard,
                   border: Border.all(color: AppColors.surfaceBorder),
@@ -356,7 +385,13 @@ class Sidebar extends StatelessWidget {
                   children: [
                     Icon(Icons.add, color: AppColors.primary, size: 20),
                     SizedBox(width: 12),
-                    Text('New Scenario', style: TextStyle(color: AppColors.textLightGray, fontSize: 14)),
+                    Text(
+                      'New Scenario',
+                      style: TextStyle(
+                        color: AppColors.textLightGray,
+                        fontSize: 14,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -369,14 +404,28 @@ class Sidebar extends StatelessWidget {
                 if (today.isNotEmpty) ...[
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    child: Text('TODAY', style: TextStyle(color: Color(0xFF554b60), fontSize: 12, fontWeight: FontWeight.w600)),
+                    child: Text(
+                      'TODAY',
+                      style: TextStyle(
+                        color: Color(0xFF554b60),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                   ...today.map((c) => _buildNavItem(c, context)),
                 ],
                 if (others.isNotEmpty) ...[
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    child: Text('HISTORY', style: TextStyle(color: Color(0xFF554b60), fontSize: 12, fontWeight: FontWeight.w600)),
+                    child: Text(
+                      'HISTORY',
+                      style: TextStyle(
+                        color: Color(0xFF554b60),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                   ...others.map((c) => _buildNavItem(c, context)),
                 ],
@@ -396,13 +445,15 @@ class Sidebar extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         margin: const EdgeInsets.only(bottom: 2),
-        decoration: isSelected 
-          ? BoxDecoration(
-              color: AppColors.surfaceBorder.withOpacity(0.4),
-              border: Border.all(color: AppColors.surfaceBorder.withOpacity(0.5)),
-              borderRadius: BorderRadius.circular(8),
-            )
-          : null,
+        decoration: isSelected
+            ? BoxDecoration(
+                color: AppColors.surfaceBorder.withOpacity(0.4),
+                border: Border.all(
+                  color: AppColors.surfaceBorder.withOpacity(0.5),
+                ),
+                borderRadius: BorderRadius.circular(8),
+              )
+            : null,
         child: Row(
           children: [
             Icon(
@@ -433,7 +484,11 @@ class ChatArea extends StatelessWidget {
   final Conversation? conversation;
   final bool isLoading;
 
-  const ChatArea({super.key, required this.conversation, required this.isLoading});
+  const ChatArea({
+    super.key,
+    required this.conversation,
+    required this.isLoading,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -452,7 +507,11 @@ class ChatArea extends StatelessWidget {
                 ),
                 borderRadius: BorderRadius.circular(50),
                 boxShadow: [
-                  BoxShadow(color: AppColors.primary.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, 4)),
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
                 ],
               ),
               child: const Icon(Icons.smart_toy, color: Colors.white, size: 24),
@@ -460,7 +519,11 @@ class ChatArea extends StatelessWidget {
             const SizedBox(height: 16),
             const Text(
               'Greetings, adventurer.',
-              style: TextStyle(fontSize: 18, color: AppColors.textWhite, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                fontSize: 18,
+                color: AppColors.textWhite,
+                fontWeight: FontWeight.w500,
+              ),
             ),
             const SizedBox(height: 8),
             const Text(
@@ -484,7 +547,11 @@ class ChatArea extends StatelessWidget {
               children: [
                 SageAvatar(),
                 SizedBox(width: 16),
-                SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+                SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
               ],
             ),
           );
@@ -500,7 +567,10 @@ class ChatArea extends StatelessWidget {
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 600),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 14,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.surfaceCard,
                       border: Border.all(color: AppColors.surfaceBorder),
@@ -513,7 +583,11 @@ class ChatArea extends StatelessWidget {
                     ),
                     child: Text(
                       item.text,
-                      style: const TextStyle(color: AppColors.textLightGray, fontSize: 15, height: 1.5),
+                      style: const TextStyle(
+                        color: AppColors.textLightGray,
+                        fontSize: 15,
+                        height: 1.5,
+                      ),
                     ),
                   ),
                 ),
@@ -521,53 +595,88 @@ class ChatArea extends StatelessWidget {
             ),
           );
         } else if (item is AppResponse) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 24),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SageAvatar(),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('The Sage', style: TextStyle(color: AppColors.textWhite, fontWeight: FontWeight.w600, fontSize: 14)),
-                      const SizedBox(height: 8),
-                      // Intro text logic: Assuming the first part of response might be text, but API returns just spells. 
-                      // For now, we show spells. If we had text, we'd show it here.
-                      if (item.spells.isNotEmpty) ...[
-                        const Text(
-                          'Here are some options for your request:', 
-                          style: TextStyle(color: AppColors.textLightGray, fontSize: 15, height: 1.5)
-                        ),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          height: 380, 
-                          child: Scrollbar(
-                            thumbVisibility: true,
-                            child: ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              padding: const EdgeInsets.only(bottom: 12),
-                              itemCount: item.spells.length,
-                              separatorBuilder: (_, __) => const SizedBox(width: 16),
-                              itemBuilder: (context, i) => SizedBox(
-                                width: 300,
-                                child: SpellCard(spell: item.spells[i]),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ]
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
+          return AssistantMessage(response: item);
         }
         return const SizedBox.shrink();
       },
+    );
+  }
+}
+
+class AssistantMessage extends StatefulWidget {
+  final AppResponse response;
+
+  const AssistantMessage({super.key, required this.response});
+
+  @override
+  State<AssistantMessage> createState() => _AssistantMessageState();
+}
+
+class _AssistantMessageState extends State<AssistantMessage> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SageAvatar(),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'The Sage',
+                  style: TextStyle(
+                    color: AppColors.textWhite,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                if (widget.response.spells.isNotEmpty) ...[
+                  const Text(
+                    'Here are some options for your request:',
+                    style: TextStyle(
+                      color: AppColors.textLightGray,
+                      fontSize: 15,
+                      height: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    height: 380,
+                    child: Scrollbar(
+                      controller: _scrollController,
+                      thumbVisibility: true,
+                      child: ListView.separated(
+                        controller: _scrollController,
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.only(bottom: 12),
+                        itemCount: widget.response.spells.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 16),
+                        itemBuilder: (context, i) => SizedBox(
+                          width: 300,
+                          child: SpellCard(spell: widget.response.spells[i]),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -588,7 +697,11 @@ class SageAvatar extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(50),
         boxShadow: [
-          BoxShadow(color: AppColors.primary.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: const Icon(Icons.smart_toy, color: Colors.white, size: 16),
@@ -601,7 +714,12 @@ class InputArea extends StatelessWidget {
   final bool isLoading;
   final Function(String) onSubmit;
 
-  const InputArea({super.key, required this.controller, required this.isLoading, required this.onSubmit});
+  const InputArea({
+    super.key,
+    required this.controller,
+    required this.isLoading,
+    required this.onSubmit,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -624,7 +742,11 @@ class InputArea extends StatelessWidget {
               border: Border.all(color: AppColors.surfaceBorder),
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
-                 BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, 4)),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
               ],
             ),
             child: CallbackShortcuts(
@@ -640,7 +762,8 @@ class InputArea extends StatelessWidget {
                 minLines: 1,
                 style: const TextStyle(color: Colors.white),
                 decoration: const InputDecoration(
-                  hintText: 'Ask for a spell, describe a scenario, or check rules...',
+                  hintText:
+                      'Ask for a spell, describe a scenario, or check rules...',
                   hintStyle: TextStyle(color: AppColors.textGray),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.all(16),
@@ -663,7 +786,7 @@ class SpellCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final gSpell = spell.grammarianSpell;
-    
+
     // Determine color based on school (mock-like colors)
     Color iconColor = Colors.blue.shade300;
     Color textColor = Colors.blue.shade400;
@@ -752,7 +875,11 @@ class SpellCard extends StatelessWidget {
             child: SingleChildScrollView(
               child: Text(
                 gSpell.description,
-                style: const TextStyle(color: Color(0xFFd0c6dc), fontSize: 12, height: 1.5),
+                style: const TextStyle(
+                  color: Color(0xFFd0c6dc),
+                  fontSize: 12,
+                  height: 1.5,
+                ),
               ),
             ),
           ),
@@ -771,13 +898,20 @@ class SpellCard extends StatelessWidget {
             width: 80,
             child: Text(
               '$label:',
-              style: const TextStyle(color: AppColors.textGray, fontSize: 11, fontWeight: FontWeight.w500),
+              style: const TextStyle(
+                color: AppColors.textGray,
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(color: AppColors.textLightGray, fontSize: 11),
+              style: const TextStyle(
+                color: AppColors.textLightGray,
+                fontSize: 11,
+              ),
             ),
           ),
         ],
