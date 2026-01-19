@@ -861,6 +861,36 @@ class SpellCard extends StatelessWidget {
                   ],
                 ),
               ),
+              IconButton(
+                icon: const Icon(
+                  Icons.copy,
+                  size: 20,
+                  color: AppColors.textGray,
+                ),
+                tooltip: 'Copy Markdown',
+                onPressed: () {
+                  final markdown =
+                      '''
+### ${gSpell.name}
+*${gSpell.level.jsonValue} ${gSpell.school.jsonValue}*
+
+**Casting Time:** ${gSpell.castingTime}
+**Range:** ${gSpell.range}
+**Components:** ${gSpell.components}
+**Duration:** ${gSpell.duration}
+**Original Spell:** ${spell.originalSpellName}
+
+${gSpell.description}
+''';
+                  Clipboard.setData(ClipboardData(text: markdown));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Copied to clipboard'),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
           const SizedBox(height: 16),
