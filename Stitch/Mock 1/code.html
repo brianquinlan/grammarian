@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Grammarian Sage: Forest Grimoire Refined</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&amp;family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "fantasy-bg": "#0f1310", 
+                        "fantasy-sidebar": "#16120f", 
+                        "fantasy-card": "#1a211c", 
+                        "fantasy-border": "#465945", 
+                        "fantasy-border-light": "#6b7d6c",
+                        "fantasy-accent": "#b87333", 
+                        "fantasy-primary": "#2d4a35", 
+                        "fantasy-text": "#e3dac9", 
+                        "fantasy-muted": "#8f9e92", 
+                        "fantasy-copper": "#ad784f", 
+                    },
+                    fontFamily: {
+                        "display": ["Cinzel", "serif"],
+                        "body": ["Crimson Text", "serif"],
+                        "sans": ["Inter", "sans-serif"]
+                    },
+                    backgroundImage: {
+                        "wood-grain": "repeating-linear-gradient(45deg, rgba(30, 25, 20, 0.03) 0px, rgba(30, 25, 20, 0.03) 2px, transparent 2px, transparent 8px), linear-gradient(to bottom, #131a14, #0a0d0b)"
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f1310;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2d4a35;
+            border-radius: 4px;
+            border: 1px solid #16120f;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #465945;
+        }
+        body {
+            font-family: 'Crimson Text', serif;
+        }
+        .text-shadow-copper {
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+        }
+    </style>
+</head>
+<body class="bg-fantasy-bg text-fantasy-text h-screen flex flex-col overflow-hidden selection:bg-fantasy-accent/30 selection:text-white">
+<header class="flex shrink-0 items-center justify-between whitespace-nowrap border-b border-fantasy-border/60 bg-fantasy-sidebar/95 backdrop-blur-md px-6 py-3 z-30 shadow-lg relative">
+<div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMTYxMjBmIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9InJnYmEoMCwwLDAsMC4yKSIvPgo8L3N2Zz4=')] opacity-20 pointer-events-none"></div>
+<div class="flex items-center gap-4 relative z-10">
+<div class="size-10 flex items-center justify-center rounded-lg bg-gradient-to-br from-fantasy-primary to-[#1a120b] text-fantasy-copper border border-fantasy-border shadow-inner ring-1 ring-black/20">
+<span class="material-symbols-outlined text-2xl drop-shadow-sm">local_florist</span>
+</div>
+<h2 class="text-fantasy-text text-xl font-body font-bold leading-tight tracking-wide text-shadow-copper">Grammarian Sage</h2>
+</div>
+<div class="flex items-center gap-6 relative z-10">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-9 border-2 border-fantasy-border ring-2 ring-fantasy-sidebar hover:ring-fantasy-copper/50 transition-all cursor-pointer shadow-lg" data-alt="User avatar profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuACks_WUrkdX_ImH6mLDX62owFNxeaii6I922PQKPMpcq_q1LLViVJ0cAehb16Xc4i6uNHv91-GTLUFiY8W6pyUicAgw6wMQRTYE5K3x_TYLIVTb10RB1juqgdp01oI6RCbd7_DcQVTyPAiBSoZBLzokaWCRi34Wy74klIZFa5UbL4i4NEurFadOSlO1jTnGkASj0CNH3sU7GyoXjcLiJ3vpqdipoASJ0ZcHcXsIFLAFnulXnR60QSt6bHXQQljatP65BlNtrVxGw");'></div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<aside class="w-[280px] bg-fantasy-sidebar border-r border-fantasy-border/60 flex-col hidden md:flex shrink-0 z-20 shadow-2xl relative">
+<div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz48L3N2Zz4=')] opacity-30 pointer-events-none"></div>
+<div class="p-4 relative z-10">
+<button class="flex items-center gap-3 w-full px-3 py-3 bg-gradient-to-r from-fantasy-primary to-[#233528] hover:from-[#35573e] hover:to-[#2d4531] border border-fantasy-border rounded-sm text-lg font-body font-semibold text-fantasy-text transition-all shadow-md group">
+<span class="material-symbols-outlined text-fantasy-copper group-hover:scale-110 transition-transform">add_circle</span>
+<span class="tracking-wide text-base">New Adventure</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto px-2 space-y-6 relative z-10 custom-scrollbar">
+<div>
+<h3 class="px-3 text-xs font-display font-semibold text-fantasy-muted uppercase tracking-widest mb-3 border-b border-fantasy-border/30 pb-1 mx-2">Today</h3>
+<div class="space-y-1">
+<button class="w-full flex items-center gap-3 px-3 py-2 text-left text-lg text-fantasy-text bg-fantasy-border/20 rounded-sm border-l-2 border-fantasy-copper">
+<span class="material-symbols-outlined text-[18px] text-fantasy-copper">forest</span>
+<span class="truncate font-medium">Druid Spell Prep</span>
+</button>
+</div>
+</div>
+<div>
+<h3 class="px-3 text-xs font-display font-semibold text-fantasy-muted uppercase tracking-widest mb-3 border-b border-fantasy-border/30 pb-1 mx-2">Yesterday</h3>
+<div class="space-y-1">
+<button class="w-full flex items-center gap-3 px-3 py-2 text-left text-lg text-fantasy-muted hover:text-fantasy-text hover:bg-fantasy-border/10 rounded-sm transition-colors group">
+<span class="material-symbols-outlined text-[18px] text-fantasy-muted group-hover:text-fantasy-copper transition-colors">history_edu</span>
+<span class="truncate">Curse of Strahd Prep</span>
+</button>
+<button class="w-full flex items-center gap-3 px-3 py-2 text-left text-lg text-fantasy-muted hover:text-fantasy-text hover:bg-fantasy-border/10 rounded-sm transition-colors group">
+<span class="material-symbols-outlined text-[18px] text-fantasy-muted group-hover:text-fantasy-copper transition-colors">history_edu</span>
+<span class="truncate">Backstory: Kaelen</span>
+</button>
+</div>
+</div>
+<div>
+<h3 class="px-3 text-xs font-display font-semibold text-fantasy-muted uppercase tracking-widest mb-3 border-b border-fantasy-border/30 pb-1 mx-2">Previous 30 Days</h3>
+<div class="space-y-1">
+<button class="w-full flex items-center gap-3 px-3 py-2 text-left text-lg text-fantasy-muted hover:text-fantasy-text hover:bg-fantasy-border/10 rounded-sm transition-colors group">
+<span class="material-symbols-outlined text-[18px] text-fantasy-muted group-hover:text-fantasy-copper transition-colors">history_edu</span>
+<span class="truncate">Rules: Grappling</span>
+</button>
+<button class="w-full flex items-center gap-3 px-3 py-2 text-left text-lg text-fantasy-muted hover:text-fantasy-text hover:bg-fantasy-border/10 rounded-sm transition-colors group">
+<span class="material-symbols-outlined text-[18px] text-fantasy-muted group-hover:text-fantasy-copper transition-colors">history_edu</span>
+<span class="truncate">Loot Generator</span>
+</button>
+<button class="w-full flex items-center gap-3 px-3 py-2 text-left text-lg text-fantasy-muted hover:text-fantasy-text hover:bg-fantasy-border/10 rounded-sm transition-colors group">
+<span class="material-symbols-outlined text-[18px] text-fantasy-muted group-hover:text-fantasy-copper transition-colors">history_edu</span>
+<span class="truncate">Wild Magic Table</span>
+</button>
+</div>
+</div>
+</div>
+</aside>
+<main class="flex flex-1 flex-col overflow-hidden relative min-w-0 bg-wood-grain">
+<div class="flex-1 overflow-y-auto scroll-smooth w-full">
+<div class="max-w-4xl mx-auto w-full flex flex-col px-4 py-8 space-y-10 pb-12">
+<div class="flex items-start gap-4">
+<div class="flex items-center justify-center rounded-lg size-9 shrink-0 bg-gradient-to-b from-fantasy-primary to-[#1a120b] text-fantasy-copper shadow-lg border border-fantasy-border mt-1" data-alt="AI assistant avatar">
+<span class="material-symbols-outlined text-lg">auto_awesome</span>
+</div>
+<div class="flex flex-1 flex-col gap-1.5 items-start max-w-2xl">
+<div class="flex items-baseline gap-2">
+<span class="text-fantasy-text font-display font-bold text-sm tracking-wide">The Sage</span>
+<span class="text-fantasy-muted text-xs font-sans">Today 8:30 PM</span>
+</div>
+<div class="text-lg font-normal leading-relaxed text-fantasy-text/90">
+                            Greetings, traveler. I am the keeper of the grove. Tell me of your path, or seek knowledge from the ancient scrolls.
+                        </div>
+</div>
+</div>
+<div class="flex items-start gap-4 flex-row-reverse">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-9 shrink-0 border border-fantasy-border mt-1 shadow-md ring-1 ring-black/30" data-alt="User avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBUWu8IANGEooMJAUuFMzmWefzsM7Q6Kpos8o31BJpE1je4gKeuxR6D1xHg7qPg46Hy7lJ7uMkm_LMxxd8OTYF5X3g2hO1sqPmnk1LUahq_KSpiV0uOuJDD2SSruUAnszlflZvC1OwgDmT2Q8DBN6OvMAzGtP0W4XU9WYQml0zyS7j61NRH8s1UuCcIRekDtv0r522oyT_tW7Cc0nBfTLchS38Dva7IU8KXdxQehrrfbQVM74ZQaAFs6n7tbhc9ziXhWS41U2urEg");'></div>
+<div class="flex flex-1 flex-col gap-1.5 items-end max-w-2xl">
+<div class="flex items-baseline gap-2">
+<span class="text-fantasy-muted text-xs font-sans">Today 8:31 PM</span>
+<span class="text-fantasy-text font-display font-bold text-sm tracking-wide">You</span>
+</div>
+<div class="text-lg font-normal leading-relaxed rounded-lg rounded-tr-sm px-6 py-4 bg-fantasy-card border border-fantasy-border text-fantasy-text shadow-md relative overflow-hidden group">
+<div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/aged-paper.png')] opacity-10 pointer-events-none mix-blend-overlay"></div>
+                            I'm a Level 5 Druid looking for control and healing spells. What does nature offer?
+                        </div>
+</div>
+</div>
+<div class="flex items-start gap-4 w-full">
+<div class="flex items-center justify-center rounded-lg size-9 shrink-0 bg-gradient-to-b from-fantasy-primary to-[#1a120b] text-fantasy-copper shadow-lg border border-fantasy-border mt-1" data-alt="AI assistant avatar">
+<span class="material-symbols-outlined text-lg">auto_awesome</span>
+</div>
+<div class="flex flex-1 flex-col gap-1.5 items-start overflow-hidden w-full">
+<div class="flex items-baseline gap-2">
+<span class="text-fantasy-text font-display font-bold text-sm tracking-wide">The Sage</span>
+<span class="text-fantasy-muted text-xs font-sans">Today 8:31 PM</span>
+</div>
+<div class="text-lg font-normal leading-relaxed text-fantasy-text/90 max-w-2xl mb-4">
+<p>The forest provides for those who listen. For a Level 5 Druid, 3rd-level magic is now within your grasp. <strong class="text-fantasy-accent">Plant Growth</strong> offers unparalleled control over the terrain, while <strong class="text-fantasy-accent">Aura of Vitality</strong> (if using optional rules) or <strong class="text-fantasy-accent">Mass Healing Word</strong> can mend wounds efficiently.</p>
+</div>
+<div class="w-full mt-2">
+<div class="flex gap-4 w-full overflow-x-auto pb-6 pt-2 snap-x px-1 scrollbar-thin">
+<div class="min-w-[300px] w-[300px] shrink-0 snap-start group relative flex flex-col gap-4 rounded-sm bg-fantasy-card p-5 border-4 border-double border-fantasy-border hover:border-fantasy-accent transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-fantasy-accent/10">
+<div class="absolute top-0 right-0 p-1 opacity-10 group-hover:opacity-30 transition-opacity">
+<span class="material-symbols-outlined text-5xl text-fantasy-text">forest</span>
+</div>
+<div class="flex items-center gap-3 relative z-10">
+<div class="size-12 rounded bg-[#0f1310] border border-fantasy-border flex items-center justify-center text-green-400 shrink-0 shadow-inner">
+<span class="material-symbols-outlined text-2xl">grass</span>
+</div>
+<div class="min-w-0">
+<h3 class="text-fantasy-text font-body font-bold text-xl leading-tight truncate">Plant Growth</h3>
+<span class="text-fantasy-accent text-xs font-bold tracking-widest uppercase font-sans">Level 3 Transmutation</span>
+</div>
+</div>
+<div class="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1.5 text-sm text-fantasy-text/80 leading-tight border-y border-fantasy-border/30 py-3 my-1 font-body">
+<span class="font-bold text-fantasy-muted font-display text-xs uppercase">Casting:</span>
+<span class="font-sans text-xs">1 action / 8 hrs</span>
+<span class="font-bold text-fantasy-muted font-display text-xs uppercase">Range:</span>
+<span class="font-sans text-xs">150 feet</span>
+<span class="font-bold text-fantasy-muted font-display text-xs uppercase">Comp:</span>
+<span class="font-sans text-xs">V, S</span>
+<span class="font-bold text-fantasy-muted font-display text-xs uppercase">Duration:</span>
+<span class="font-sans text-xs">Instantaneous</span>
+</div>
+<p class="text-fantasy-muted text-sm leading-relaxed line-clamp-3 italic font-body">
+                                        Make plants become thick and overgrown. A creature moving through the area must spend 4 feet of movement for every 1 foot.
+                                    </p>
+</div>
+<div class="min-w-[300px] w-[300px] shrink-0 snap-start group relative flex flex-col gap-4 rounded-sm bg-fantasy-card p-5 border-4 border-double border-fantasy-border hover:border-fantasy-accent transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-fantasy-accent/10">
+<div class="absolute top-0 right-0 p-1 opacity-10 group-hover:opacity-30 transition-opacity">
+<span class="material-symbols-outlined text-5xl text-fantasy-text">auto_awesome</span>
+</div>
+<div class="flex items-center gap-3 relative z-10">
+<div class="size-12 rounded bg-[#0f1310] border border-fantasy-border flex items-center justify-center text-blue-300 shrink-0 shadow-inner">
+<span class="material-symbols-outlined text-2xl">healing</span>
+</div>
+<div class="min-w-0">
+<h3 class="text-fantasy-text font-body font-bold text-xl leading-tight truncate">Mass Healing Word</h3>
+<span class="text-blue-400 text-xs font-bold tracking-widest uppercase font-sans">Level 3 Evocation</span>
+</div>
+</div>
+<div class="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1.5 text-sm text-fantasy-text/80 leading-tight border-y border-fantasy-border/30 py-3 my-1 font-body">
+<span class="font-bold text-fantasy-muted font-display text-xs uppercase">Casting:</span>
+<span class="font-sans text-xs">1 bonus action</span>
+<span class="font-bold text-fantasy-muted font-display text-xs uppercase">Range:</span>
+<span class="font-sans text-xs">60 feet</span>
+<span class="font-bold text-fantasy-muted font-display text-xs uppercase">Comp:</span>
+<span class="font-sans text-xs">V</span>
+<span class="font-bold text-fantasy-muted font-display text-xs uppercase">Duration:</span>
+<span class="font-sans text-xs">Instantaneous</span>
+</div>
+<p class="text-fantasy-muted text-sm leading-relaxed line-clamp-3 italic font-body">
+                                        As you call out words of restoration, up to six creatures of your choice regain 1d4 + spellcasting modifier hit points.
+                                    </p>
+</div>
+<div class="min-w-[300px] w-[300px] shrink-0 snap-start group relative flex flex-col gap-4 rounded-sm bg-fantasy-card p-5 border-4 border-double border-fantasy-border hover:border-fantasy-accent transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-fantasy-accent/10">
+<div class="absolute top-0 right-0 p-1 opacity-10 group-hover:opacity-30 transition-opacity">
+<span class="material-symbols-outlined text-5xl text-fantasy-text">pest_control</span>
+</div>
+<div class="flex items-center gap-3 relative z-10">
+<div class="size-12 rounded bg-[#0f1310] border border-fantasy-border flex items-center justify-center text-amber-600 shrink-0 shadow-inner">
+<span class="material-symbols-outlined text-2xl">bug_report</span>
+</div>
+<div class="min-w-0">
+<h3 class="text-fantasy-text font-body font-bold text-xl leading-tight truncate">Giant Insect</h3>
+<span class="text-amber-500 text-xs font-bold tracking-widest uppercase font-sans">Level 4 Transmutation</span>
+</div>
+</div>
+<div class="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1.5 text-sm text-fantasy-text/80 leading-tight border-y border-fantasy-border/30 py-3 my-1 font-body">
+<span class="font-bold text-fantasy-muted font-display text-xs uppercase">Casting:</span>
+<span class="font-sans text-xs">1 action</span>
+<span class="font-bold text-fantasy-muted font-display text-xs uppercase">Range:</span>
+<span class="font-sans text-xs">30 feet</span>
+<span class="font-bold text-fantasy-muted font-display text-xs uppercase">Comp:</span>
+<span class="font-sans text-xs">V, S</span>
+<span class="font-bold text-fantasy-muted font-display text-xs uppercase">Duration:</span>
+<span class="text-fantasy-accent font-bold font-sans text-xs">Conc, 10 min</span>
+</div>
+<p class="text-fantasy-muted text-sm leading-relaxed line-clamp-3 italic font-body">
+                                        Transform nearby centipedes, spiders, wasps, or scorpions into giant versions that obey your commands.
+                                    </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-start gap-4 flex-row-reverse">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-9 shrink-0 border border-fantasy-border mt-1 shadow-md ring-1 ring-black/30" data-alt="User avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB3rGAmTVTmOW_ZOXQrDcqurOUsL_aLAu1fTEEK3EG_yBglxlNVqr7f8Drv3cmB09yqHmOSEFWeGG5yVP-r_NIZi4WIsoECqHhbpVo9EyO8jSfYumtYHNyTEaYlNrWUzgX3nql7IX1siG65N-N8tDTVmL5EMOwTOoyEXOp9zgdlS_UHu4Hk_quDFZd8F1CT91Y4Qx6elpzDT7Q7oZIzYORbOcXcYNhiZ6YWZivPMl7efzZefHMp09K085Lj5s2p0cFG3uqYjUHdmg");'></div>
+<div class="flex flex-1 flex-col gap-1.5 items-end max-w-2xl">
+<div class="flex items-baseline gap-2">
+<span class="text-fantasy-muted text-xs font-sans">Today 8:33 PM</span>
+<span class="text-fantasy-text font-display font-bold text-sm tracking-wide">You</span>
+</div>
+<div class="text-lg font-normal leading-relaxed rounded-lg rounded-tr-sm px-6 py-4 bg-fantasy-card border border-fantasy-border text-fantasy-text shadow-md relative overflow-hidden group">
+<div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/aged-paper.png')] opacity-10 pointer-events-none mix-blend-overlay"></div>
+                            Do you have something more aggressive? Maybe summoning?
+                        </div>
+</div>
+</div>
+<div class="flex items-end gap-4 opacity-60">
+<div class="flex items-center justify-center rounded-lg size-9 shrink-0 bg-gradient-to-b from-fantasy-primary to-[#1a120b] text-fantasy-copper border border-fantasy-border">
+<span class="material-symbols-outlined text-lg">auto_awesome</span>
+</div>
+<div class="flex items-center gap-1.5 h-10 px-4 bg-fantasy-card rounded-2xl rounded-bl-sm border border-fantasy-border shadow-sm">
+<div class="w-2 h-2 bg-fantasy-copper rounded-full animate-bounce"></div>
+<div class="w-2 h-2 bg-fantasy-copper rounded-full animate-bounce delay-75"></div>
+<div class="w-2 h-2 bg-fantasy-copper rounded-full animate-bounce delay-150"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 shrink-0 relative z-20">
+<div class="absolute -top-24 left-0 w-full h-24 bg-gradient-to-t from-[#0a0d0b] to-transparent pointer-events-none"></div>
+<div class="max-w-3xl mx-auto w-full pb-6">
+<label class="flex flex-col w-full">
+<div class="relative flex w-full flex-col rounded-lg bg-fantasy-card border border-fantasy-border focus-within:border-fantasy-accent focus-within:ring-1 focus-within:ring-fantasy-accent/20 transition-all shadow-2xl overflow-hidden group">
+<div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9IjAuMSIvPjwvc3ZnPg==')] opacity-20 pointer-events-none"></div>
+<textarea class="form-input w-full bg-transparent border-none text-fantasy-text placeholder:text-fantasy-muted/70 focus:ring-0 px-4 py-4 resize-none max-h-48 text-lg font-body relative z-10" placeholder="Ask the Sage for spells, rules, or lore..." rows="1"></textarea>
+<div class="flex items-center justify-end px-3 pb-3 relative z-10">
+<button class="flex items-center justify-center size-9 rounded-full bg-fantasy-accent hover:bg-[#a0622d] text-[#1c1917] transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+<span class="material-symbols-outlined text-[20px] text-white">arrow_upward</span>
+</button>
+</div>
+</div>
+</label>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>
