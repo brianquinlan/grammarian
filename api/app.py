@@ -40,14 +40,6 @@ def get_user_id():
         print(f"Auth error: {e}")
         abort(401, description="Invalid token")
 
-@app.route("/format", methods=["GET"])
-async def format():
-    get_user_id()
-    description = request.args.get("description")
-    spell = await format_spell.format(_MODEL, description)
-    print(spell)
-    return spell.model_dump_json()
-
 
 @app.route("/conversations", methods=["GET"])
 async def conversations():
