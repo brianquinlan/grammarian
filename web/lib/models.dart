@@ -119,3 +119,104 @@ class PromptResponse {
     );
   }
 }
+
+class ConversationSummary {
+  final String conversationId;
+  final DateTime createdOn;
+  final String name;
+
+  ConversationSummary({
+    required this.conversationId,
+    required this.createdOn,
+    required this.name,
+  });
+
+  factory ConversationSummary.fromJson(Map<String, dynamic> json) {
+    return ConversationSummary(
+      conversationId: json['conversation_id'] as String,
+      createdOn: DateTime.parse(json['created_on'] as String),
+      name: json['name'] as String,
+    );
+  }
+}
+
+class ListConversationsResponse {
+  final List<ConversationSummary> conversations;
+
+  ListConversationsResponse({required this.conversations});
+
+  factory ListConversationsResponse.fromJson(Map<String, dynamic> json) {
+    return ListConversationsResponse(
+      conversations: (json['conversations'] as List<dynamic>)
+          .map((e) => ConversationSummary.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+}
+
+abstract class ConversationItem {
+  ConversationItem();
+
+  factory ConversationItem.fromJson(Map<String, dynamic> json) {
+    if (json.containsKey('text')) {
+      return UserPrompt.fromJson(json);
+    } else if (json.containsKey('spells')) {
+      return AppResponse.fromJson(json);
+    }
+    throw FormatException('Unknown conversation item type: ${json.keys}');
+  }
+}
+
+class UserPrompt extends ConversationItem {
+  final String text;
+
+  UserPrompt({required this.text});
+
+  factory UserPrompt.fromJson(Map<String, dynamic> json) {
+    return UserPrompt(text: json['text'] as String);
+  }
+}
+
+class AppResponse extends ConversationItem {
+  final List<RingOfTheGrammarianSpell> spells;
+
+  AppResponse({required this.spells});
+
+  factory AppResponse.fromJson(Map<String, dynamic> json) {
+    return AppResponse(
+      spells: RingOfTheGrammarianSpell.listFromJson(
+        json['spells'] as List<dynamic>,
+      ),
+    );
+  }
+}
+
+class Conversation {
+  final String conversationId;
+  final DateTime createdOn;
+  final String name;
+  final String model;
+  final List<ConversationItem> dialog;
+
+  Conversation({
+    required this.conversationId,
+    required this.createdOn,
+    required this.name,
+    required this.model,
+    required this.dialog,
+  });
+
+  factory Conversation.fromJson(Map<String, dynamic> json) {
+    return Conversation(
+      conversationId: json['conversation_id'] as String,
+      createdOn: DateTime.parse(json['created_on'] as String),
+      name: json['name'] as String? ?? '',
+      model: json['model'] as String? ?? '',
+      dialog:
+          (json['dialog'] as List<dynamic>?)
+              ?.map((e) => ConversationItem.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+    );
+  }
+}

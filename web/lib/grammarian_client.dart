@@ -36,4 +36,28 @@ class GrammarianClient {
       throw Exception('Failed to prompt: ${response.statusCode}');
     }
   }
+
+  Future<ListConversationsResponse> getConversations() async {
+    final uri = Uri.parse('$baseUrl/conversations');
+    final response = await client.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonMap = jsonDecode(response.body);
+      return ListConversationsResponse.fromJson(jsonMap);
+    } else {
+      throw Exception('Failed to load conversations: ${response.statusCode}');
+    }
+  }
+
+  Future<Conversation> getConversation(String conversationId) async {
+    final uri = Uri.parse('$baseUrl/conversation/$conversationId');
+    final response = await client.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonMap = jsonDecode(response.body);
+      return Conversation.fromJson(jsonMap);
+    } else {
+      throw Exception('Failed to load conversation: ${response.statusCode}');
+    }
+  }
 }
