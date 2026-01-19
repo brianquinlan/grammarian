@@ -16,6 +16,7 @@ async def find_spells(
     model: Model, description: str,
     model_messages : list[ModelMessage] | None = [],
 ) -> Tuple[list[ModelMessage], list[models.RingOfTheGrammarianSpell]]:
+    await asyncio.sleep(2)
     firefall = models.RingOfTheGrammarianSpell(
         original_spell_name="Fireball",
         grammarian_spell=models.Spell(

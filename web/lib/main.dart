@@ -159,26 +159,82 @@ class _MainLayoutState extends State<MainLayout> {
 
   Future<void> _submitPrompt(String text) async {
     if (text.trim().isEmpty) return;
-    setState(() => _isLoading = true);
+    
+    // 1. Check if this is a new conversation request
+    final isNewConversation = _currentConversationId == null;
+    final tempId = 'pending_${DateTime.now().millisecondsSinceEpoch}';
+
+    setState(() {
+      _isLoading = true;
+      
+      if (isNewConversation) {
+        // 2. Optimistic UI Update: Create placeholder conversation
+        final tempSummary = ConversationSummary(
+          conversationId: tempId,
+          createdOn: DateTime.now(),
+          name: '...',
+        );
+        _conversations.insert(0, tempSummary);
+        
+        _currentConversationId = tempId;
+        _currentConversation = Conversation(
+          conversationId: tempId,
+          createdOn: DateTime.now(),
+          name: '...',
+          model: 'pending',
+          dialog: [UserPrompt(text: text)],
+        );
+      }
+    });
+
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) _client.authToken = await user.getIdToken();
-
-      final response = await _client.prompt(
-        text,
-        conversationId: _currentConversationId,
-      );
-
-      if (_currentConversationId == null) {
-        await _loadConversations();
-        _currentConversationId = response.conversationId;
+      
+      // 3. Make API Call (pass null if it's a new conversation, despite local temp ID)
+      final conversationIdToSend = isNewConversation ? null : _currentConversationId;
+      final response = await _client.prompt(text, conversationId: conversationIdToSend);
+      
+      if (isNewConversation) {
+        // 4. Handle New Conversation Response: Fetch full details to get the generated name
+        final fullConversation = await _client.getConversation(response.conversationId);
+        
+        setState(() {
+           // Remove the temporary placeholder
+           _conversations.removeWhere((c) => c.conversationId == tempId);
+           
+           // Create summary with the real name and ID
+           final newSummary = ConversationSummary(
+             conversationId: fullConversation.conversationId,
+             createdOn: fullConversation.createdOn,
+             name: fullConversation.name,
+           );
+           
+           // Insert at top and update current view
+           _conversations.insert(0, newSummary);
+           _currentConversationId = fullConversation.conversationId;
+           _currentConversation = fullConversation;
+        });
+      } else {
+        // 5. Handle Existing Conversation Response: Refresh view
+        if (_currentConversationId != null) {
+          await _selectConversation(_currentConversationId!);
+        }
       }
-      if (_currentConversationId != null) {
-        await _selectConversation(_currentConversationId!);
-      }
+
       _promptController.clear();
     } catch (e) {
-      if (mounted) _showError('Error finding spells: $e');
+      if (mounted) {
+          _showError('Error finding spells: $e');
+          // Revert optimistic updates if failed
+          if (isNewConversation) {
+              setState(() {
+                  _conversations.removeWhere((c) => c.conversationId == tempId);
+                  _currentConversationId = null;
+                  _currentConversation = null;
+              });
+          }
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
