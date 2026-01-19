@@ -1,5 +1,6 @@
 quart
 google-cloud-firestore
+firebase-admin
 hypercorn
 pydantic
 pydantic-ai

@@ -5,6 +5,7 @@ import 'models.dart';
 class GrammarianClient {
   final http.Client client;
   final String baseUrl;
+  String? authToken;
 
   GrammarianClient({
     required this.client,
@@ -13,6 +14,10 @@ class GrammarianClient {
       defaultValue: '/api',
     ),
   });
+
+  Map<String, String> get _headers => {
+    if (authToken != null) 'Authorization': 'Bearer $authToken',
+  };
 
   Future<PromptResponse> prompt(
     String description, {
@@ -26,7 +31,7 @@ class GrammarianClient {
       },
     );
     print(uri);
-    final response = await client.get(uri);
+    final response = await client.get(uri, headers: _headers);
     print(response.body);
 
     if (response.statusCode == 200) {
@@ -39,7 +44,7 @@ class GrammarianClient {
 
   Future<ListConversationsResponse> getConversations() async {
     final uri = Uri.parse('$baseUrl/conversations');
-    final response = await client.get(uri);
+    final response = await client.get(uri, headers: _headers);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonMap = jsonDecode(response.body);
@@ -51,7 +56,7 @@ class GrammarianClient {
 
   Future<Conversation> getConversation(String conversationId) async {
     final uri = Uri.parse('$baseUrl/conversation/$conversationId');
-    final response = await client.get(uri);
+    final response = await client.get(uri, headers: _headers);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonMap = jsonDecode(response.body);

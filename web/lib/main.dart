@@ -1,10 +1,32 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'grammarian_client.dart';
 import 'models.dart';
+import 'login_page.dart';
+import 'firebase_options.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    
+    if (kDebugMode) {
+      try {
+        await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+        print('Using Firebase Auth Emulator');
+      } catch (e) {
+        print('Failed to use Firebase Auth Emulator: $e');
+      }
+    }
+  } catch (e) {
+    print('Firebase initialization failed: $e');
+  }
   runApp(const MyApp());
 }
 
@@ -19,7 +41,15 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Ring of the Grammarian'),
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return const MyHomePage(title: 'Ring of the Grammarian');
+          }
+          return const LoginPage();
+        },
+      ),
     );
   }
 }
@@ -44,7 +74,24 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _loadConversations();
+    _initAndLoad();
+  }
+
+  Future<void> _initAndLoad() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        final token = await user.getIdToken();
+        _client.authToken = token;
+        await _loadConversations();
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error initializing session: $e')),
+          );
+        }
+      }
+    }
   }
 
   Future<void> _loadConversations() async {
@@ -71,6 +118,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     try {
+      // Refresh token ensures we don't have stale auth
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        _client.authToken = await user.getIdToken();
+      }
+
       final conversation = await _client.getConversation(conversationId);
       setState(() {
         _currentConversation = conversation;
@@ -96,6 +149,10 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Future<void> _signOut() async {
+    await FirebaseAuth.instance.signOut();
+  }
+
   Future<void> _submitPrompt(String text) async {
     if (text.isEmpty) return;
 
@@ -104,6 +161,11 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        _client.authToken = await user.getIdToken();
+      }
+
       final response = await _client.prompt(
         text,
         conversationId: _currentConversationId,
@@ -142,6 +204,13 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Sign Out',
+            onPressed: _signOut,
+          ),
+        ],
       ),
       body: Row(
         children: [

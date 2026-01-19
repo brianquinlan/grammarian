@@ -3,7 +3,6 @@ from google.cloud import firestore
 import models
 
 _client: firestore.Client | None = None
-_conversations: firestore.CollectionReference | None = None
 
 def _get_client() -> firestore.Client:
     global _client
@@ -11,18 +10,15 @@ def _get_client() -> firestore.Client:
         _client = firestore.Client()
     return _client
 
-def _get_conversations() -> firestore.CollectionReference:
-    global _conversations
-    if _conversations is None:
-        _conversations = _get_client().collection("conversations")
-    return _conversations
+def _get_user_conversations(user_id: str) -> firestore.CollectionReference:
+    return _get_client().collection("users").document(user_id).collection("conversations")
 
-def get_conversations() -> Generator[models.Conversation, None, None]:
-    for c in _get_conversations().stream():
+def get_conversations(user_id: str) -> Generator[models.Conversation, None, None]:
+    for c in _get_user_conversations(user_id).stream():
         yield models.Conversation.model_validate(c.to_dict())
 
-def get_conversation(conversation_id: str) -> models.Conversation:
-    conversations = _get_conversations()
+def get_conversation(user_id: str, conversation_id: str) -> models.Conversation:
+    conversations = _get_user_conversations(user_id)
     conversation_ref = conversations.document(conversation_id)
     doc = cast(firestore.DocumentSnapshot, conversation_ref.get())
     if not doc.exists:
@@ -30,9 +26,9 @@ def get_conversation(conversation_id: str) -> models.Conversation:
     
     return models.Conversation.model_validate(doc.to_dict())
 
-def save_conversation(conversation: models.Conversation):
+def save_conversation(user_id: str, conversation: models.Conversation):
     conversation.model_dump(mode='json')
-    conversations = _get_conversations()
+    conversations = _get_user_conversations(user_id)
     conversation_ref = conversations.document(conversation.conversation_id)
     conversation_ref.set(
         conversation.model_dump(mode='json'))
