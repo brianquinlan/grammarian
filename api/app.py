@@ -54,8 +54,16 @@ async def conversation(conversation_id: str):
 @app.route("/prompt", methods=["GET", "POST"])
 async def prompt():
     conversation_id = request.args.get("conversation_id")
+    description = request.args.get("description")
+    if description is None:
+        raise Exception("no description")
     if not conversation_id:
-        conversation = models.Conversation(conversation_id=str(uuid.uuid4()))
+        title = await titler.title_conversation(
+            _MODEL,
+            description=description,
+            existing_titles=[c.name for c in storage.get_conversations()],
+        )
+        conversation = models.Conversation(conversation_id=str(uuid.uuid4()), name=title)
     else:
         conversation = storage.get_conversation(conversation_id)
 
@@ -64,18 +72,10 @@ async def prompt():
     else:
         find_spells = grammarian.find_spells
 
-    description = request.args.get("description")
-    if description is None:
-        raise Exception("no description")
-    title = await titler.title_conversation(
-        _MODEL,
-        description=description,
-        existing_titles=[c.name for c in storage.get_conversations()],
-    )
+
     all_messages, spells = await find_spells(
         _MODEL, description, conversation.all_messages
     )
-    conversation.name = title
     conversation.all_messages = all_messages
     conversation.dialog.extend(
         [models.UserPrompt(text=description), models.AppResponse(spells=spells)]
