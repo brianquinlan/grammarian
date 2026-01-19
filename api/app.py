@@ -1,8 +1,9 @@
 from quart import request, Quart, abort
+import argparse
 from model_factory import get_model
-import format_spell
 import grammarian
 import fake_grammarian
+import fake_titler
 import storage
 import models
 import titler
@@ -71,11 +72,19 @@ async def prompt():
     user_id = get_user_id()
     conversation_id = request.args.get("conversation_id")
     description = request.args.get("description")
+
+    if app.config.get("NO_LLM"):
+        find_spells = fake_grammarian.find_spells
+        title_conversation = fake_titler.title_conversation
+    else:
+        find_spells = grammarian.find_spells
+        title_conversation = titler.title_conversation
+
     if description is None:
         raise Exception("no description")
     if not conversation_id:
         existing_titles = [c.name for c in storage.get_conversations(user_id)]
-        title = await titler.title_conversation(
+        title = await title_conversation(
             _MODEL,
             description=description,
             existing_titles=existing_titles,
@@ -84,10 +93,6 @@ async def prompt():
     else:
         conversation = storage.get_conversation(user_id, conversation_id)
 
-    if "fake" in request.args:
-        find_spells = fake_grammarian.find_spells
-    else:
-        find_spells = grammarian.find_spells
 
 
     all_messages, spells = await find_spells(
@@ -106,4 +111,9 @@ async def prompt():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--no-llm", action="store_true", help="Use fake LLM")
+    args = parser.parse_args()
+    
+    app.config["NO_LLM"] = args.no_llm
     app.run(debug=True)
