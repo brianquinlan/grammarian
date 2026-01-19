@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/gestures.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -50,6 +51,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Grammarian Sage',
       debugShowCheckedModeBanner: false,
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        dragDevices: {
+          PointerDeviceKind.mouse,
+          PointerDeviceKind.touch,
+          PointerDeviceKind.stylus,
+          PointerDeviceKind.trackpad,
+        },
+      ),
       themeMode: ThemeMode.dark,
       darkTheme: ThemeData(
         brightness: Brightness.dark,
@@ -535,13 +544,17 @@ class ChatArea extends StatelessWidget {
                         const SizedBox(height: 16),
                         SizedBox(
                           height: 380, 
-                          child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: item.spells.length,
-                            separatorBuilder: (_, __) => const SizedBox(width: 16),
-                            itemBuilder: (context, i) => SizedBox(
-                              width: 300,
-                              child: SpellCard(spell: item.spells[i]),
+                          child: Scrollbar(
+                            thumbVisibility: true,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              padding: const EdgeInsets.only(bottom: 12),
+                              itemCount: item.spells.length,
+                              separatorBuilder: (_, __) => const SizedBox(width: 16),
+                              itemBuilder: (context, i) => SizedBox(
+                                width: 300,
+                                child: SpellCard(spell: item.spells[i]),
+                              ),
                             ),
                           ),
                         ),
