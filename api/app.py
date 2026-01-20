@@ -102,17 +102,17 @@ async def prompt():
 
 
 
-    all_messages, spells = await find_spells(
+    all_messages, sage_answer = await find_spells(
         _MODEL, description, conversation.all_messages
     )
     conversation.all_messages = all_messages
     conversation.dialog.extend(
-        [models.UserPrompt(text=description), models.AppResponse(spells=spells)]
+        [models.UserPrompt(text=description), models.AppResponse(sage_answer=sage_answer)]
     )
     storage.save_conversation(user_id, conversation)
 
     response = models.PromptResponse(
-        conversation_id=conversation.conversation_id, spells=spells
+        conversation_id=conversation.conversation_id, sage_answer=sage_answer
     )
     return response.model_dump_json(), 200, {"Content-Type": "application/json"}
 

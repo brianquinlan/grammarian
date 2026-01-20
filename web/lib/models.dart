@@ -104,17 +104,36 @@ class RingOfTheGrammarianSpell {
   }
 }
 
+class SageOfTheGrammarianAnswer {
+  final String answerDescription;
+  final List<RingOfTheGrammarianSpell> grammarianSpells;
+
+  SageOfTheGrammarianAnswer({
+    required this.answerDescription,
+    required this.grammarianSpells,
+  });
+
+  factory SageOfTheGrammarianAnswer.fromJson(Map<String, dynamic> json) {
+    return SageOfTheGrammarianAnswer(
+      answerDescription: json['answer_description'] as String,
+      grammarianSpells: RingOfTheGrammarianSpell.listFromJson(
+        json['grammarian_spells'] as List<dynamic>,
+      ),
+    );
+  }
+}
+
 class PromptResponse {
   final String conversationId;
-  final List<RingOfTheGrammarianSpell> spells;
+  final SageOfTheGrammarianAnswer sageAnswer;
 
-  PromptResponse({required this.conversationId, required this.spells});
+  PromptResponse({required this.conversationId, required this.sageAnswer});
 
   factory PromptResponse.fromJson(Map<String, dynamic> json) {
     return PromptResponse(
       conversationId: json['conversation_id'] as String,
-      spells: RingOfTheGrammarianSpell.listFromJson(
-        json['spells'] as List<dynamic>,
+      sageAnswer: SageOfTheGrammarianAnswer.fromJson(
+        json['sage_answer'] as Map<String, dynamic>,
       ),
     );
   }
@@ -160,7 +179,7 @@ abstract class ConversationItem {
   factory ConversationItem.fromJson(Map<String, dynamic> json) {
     if (json.containsKey('text')) {
       return UserPrompt.fromJson(json);
-    } else if (json.containsKey('spells')) {
+    } else if (json.containsKey('sage_answer')) {
       return AppResponse.fromJson(json);
     }
     throw FormatException('Unknown conversation item type: ${json.keys}');
@@ -178,14 +197,14 @@ class UserPrompt extends ConversationItem {
 }
 
 class AppResponse extends ConversationItem {
-  final List<RingOfTheGrammarianSpell> spells;
+  final SageOfTheGrammarianAnswer sageAnswer;
 
-  AppResponse({required this.spells});
+  AppResponse({required this.sageAnswer});
 
   factory AppResponse.fromJson(Map<String, dynamic> json) {
     return AppResponse(
-      spells: RingOfTheGrammarianSpell.listFromJson(
-        json['spells'] as List<dynamic>,
+      sageAnswer: SageOfTheGrammarianAnswer.fromJson(
+        json['sage_answer'] as Map<String, dynamic>,
       ),
     );
   }

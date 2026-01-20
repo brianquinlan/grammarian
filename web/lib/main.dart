@@ -687,6 +687,7 @@ class _AssistantMessageState extends State<AssistantMessage> {
 
   @override
   Widget build(BuildContext context) {
+    final sageAnswer = widget.response.sageAnswer;
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: Row(
@@ -707,15 +708,15 @@ class _AssistantMessageState extends State<AssistantMessage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                if (widget.response.spells.isNotEmpty) ...[
-                  const Text(
-                    'Here are some options for your request:',
-                    style: TextStyle(
-                      color: AppColors.textLightGray,
-                      fontSize: 15,
-                      height: 1.5,
-                    ),
+                Text(
+                  sageAnswer.answerDescription,
+                  style: const TextStyle(
+                    color: AppColors.textLightGray,
+                    fontSize: 15,
+                    height: 1.5,
                   ),
+                ),
+                if (sageAnswer.grammarianSpells.isNotEmpty) ...[
                   const SizedBox(height: 16),
                   SizedBox(
                     height: 500,
@@ -726,11 +727,13 @@ class _AssistantMessageState extends State<AssistantMessage> {
                         controller: _scrollController,
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.only(bottom: 12),
-                        itemCount: widget.response.spells.length,
+                        itemCount: sageAnswer.grammarianSpells.length,
                         separatorBuilder: (_, __) => const SizedBox(width: 16),
                         itemBuilder: (context, i) => SizedBox(
                           width: 300,
-                          child: SpellCard(spell: widget.response.spells[i]),
+                          child: SpellCard(
+                            spell: sageAnswer.grammarianSpells[i],
+                          ),
                         ),
                       ),
                     ),

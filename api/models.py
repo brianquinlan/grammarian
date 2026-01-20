@@ -1,10 +1,11 @@
 import enum
-from typing import TextIO
+from typing import Annotated, TextIO
 
 from pydantic_ai import ModelMessage
 from termcolor import colored
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StringConstraints, constr
 import datetime
+
 
 class School(enum.Enum):
     ABJURATION = "Abjuration"
@@ -51,7 +52,8 @@ class Spell(BaseModel):
             return colored(t, "black", attrs=["bold"]) if f.isatty() else t
 
         title = field
-        f.write(f"""{title(self.name)} {self.school.value} {self.level.value}
+        f.write(
+            f"""{title(self.name)} {self.school.value} {self.level.value}
 
 {field("Casting Time:")} {self.casting_time}
 {field("Range:")} {self.range}
@@ -59,23 +61,26 @@ class Spell(BaseModel):
 {field("Duration:")} {self.duration}
 
 {self.description}
-""")
+"""
+        )
 
 
 class RingOfTheGrammarianSpell(BaseModel):
-    """The spell used to generate the new spell, e.g. "Cause Fear"."""
+    original_spell_name: str = Field(
+        description='The spell used to generate the new spell, e.g. "Cause Fear".'
+    )
 
-    original_spell_name: str
-
-    """The spell that can be cast using the Ring of the Grammarian."""
-    grammarian_spell: Spell
+    grammarian_spell: Spell = Field(
+        description="The spell that can be cast using the Ring of the Grammarian."
+    )
 
     def write_to_file(self, f: TextIO):
         def field(t):
             return colored(t, "black", attrs=["bold"]) if f.isatty() else t
 
         title = field
-        f.write(f"""{title(self.grammarian_spell.name)} {self.grammarian_spell.school.value} {self.grammarian_spell.level.value}
+        f.write(
+            f"""{title(self.grammarian_spell.name)} {self.grammarian_spell.school.value} {self.grammarian_spell.level.value}
 
 {field("Casting Time:")} {self.grammarian_spell.casting_time}
 {field("Range:")} {self.grammarian_spell.range}
@@ -84,33 +89,52 @@ class RingOfTheGrammarianSpell(BaseModel):
 {field("Derived From:")} {self.original_spell_name}
 
 {self.grammarian_spell.description}
-""")
+"""
+        )
+
+
+class SageOfTheGrammarianAnswer(BaseModel):
+    answer_description: Annotated[
+        str,
+        StringConstraints(min_length=30, max_length=200),
+    ] = Field(description='A description of the reasoning used to produce the ' 
+              'spells suggested by the sage. May include a description of the '
+              'assumptions made (such as character class or level) by the sage.')
+    grammarian_spells: list[RingOfTheGrammarianSpell] = Field(
+        description="The spells suggested by the sage."
+    )
+
 
 class UserPrompt(BaseModel):
     text: str
 
+
 class AppResponse(BaseModel):
-    spells: list[RingOfTheGrammarianSpell] = Field(default_factory=list)
+    sage_answer: SageOfTheGrammarianAnswer
+
 
 class Conversation(BaseModel):
     conversation_id: str
     created_on: datetime.datetime = Field(default_factory=datetime.datetime.now)
-    name: str = ''
-    model: str = ''
-    all_messages : list[ModelMessage] = []
+    name: str = ""
+    model: str = ""
+    all_messages: list[ModelMessage] = []
     dialog: list[UserPrompt | AppResponse] = []
 
+
 # API results
+
 
 class ConversationSummary(BaseModel):
     conversation_id: str
     created_on: datetime.datetime
     name: str
 
+
 class ListConversationsResponse(BaseModel):
     conversations: list[ConversationSummary]
 
+
 class PromptResponse(BaseModel):
     conversation_id: str
-    spells: list[RingOfTheGrammarianSpell] = Field(default_factory=list)
-
+    sage_answer: SageOfTheGrammarianAnswer

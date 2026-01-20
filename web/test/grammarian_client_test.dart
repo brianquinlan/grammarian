@@ -5,41 +5,56 @@ import 'package:grammarian_web/grammarian_client.dart';
 import 'package:grammarian_web/models.dart';
 
 class MockClient extends Fake implements http.Client {
-  final Future<http.Response> Function(Uri url) handler;
+  final Future<http.Response> Function(Uri url, {Object? body}) handler;
   MockClient(this.handler);
 
   @override
   Future<http.Response> get(Uri url, {Map<String, String>? headers}) {
     return handler(url);
   }
+
+  @override
+  Future<http.Response> post(
+    Uri url, {
+    Map<String, String>? headers,
+    Object? body,
+    Encoding? encoding,
+  }) {
+    return handler(url, body: body);
+  }
 }
 
 void main() {
   test('prompt returns PromptResponse on 200', () async {
-    final client = MockClient((url) async {
-      if (url.path == '/api/prompt' &&
-          url.queryParameters['description'] == 'test') {
-        return http.Response(
-          jsonEncode({
-            "conversation_id": "123",
-            "spells": [
-              {
-                "original_spell_name": "Test Spell",
-                "grammarian_spell": {
-                  "name": "Test Spell",
-                  "school": "Evocation",
-                  "level": "3rd",
-                  "casting_time": "1 action",
-                  "range": "150 feet",
-                  "components": "V, S, M",
-                  "duration": "Instantaneous",
-                  "description": "A test spell.",
-                },
+    final client = MockClient((url, {body}) async {
+      if (url.path == '/api/prompt') {
+        final bodyMap = jsonDecode(body as String);
+        if (bodyMap['description'] == 'test') {
+          return http.Response(
+            jsonEncode({
+              "conversation_id": "123",
+              "sage_answer": {
+                "answer_description": "Here is a test spell.",
+                "grammarian_spells": [
+                  {
+                    "original_spell_name": "Test Spell",
+                    "grammarian_spell": {
+                      "name": "Test Spell",
+                      "school": "Evocation",
+                      "level": "3rd",
+                      "casting_time": "1 action",
+                      "range": "150 feet",
+                      "components": "V, S, M",
+                      "duration": "Instantaneous",
+                      "description": "A test spell.",
+                    },
+                  },
+                ],
               },
-            ],
-          }),
-          200,
-        );
+            }),
+            200,
+          );
+        }
       }
       return http.Response('Not Found', 404);
     });
@@ -49,12 +64,15 @@ void main() {
 
     expect(response, isA<PromptResponse>());
     expect(response.conversationId, '123');
-    expect(response.spells.length, 1);
-    expect(response.spells.first.originalSpellName, 'Test Spell');
+    expect(response.sageAnswer.grammarianSpells.length, 1);
+    expect(
+      response.sageAnswer.grammarianSpells.first.originalSpellName,
+      'Test Spell',
+    );
   });
 
   test('getConversations returns ListConversationsResponse on 200', () async {
-    final client = MockClient((url) async {
+    final client = MockClient((url, {body}) async {
       if (url.path == '/api/conversations') {
         return http.Response(
           jsonEncode({
@@ -81,7 +99,7 @@ void main() {
   });
 
   test('getConversation returns Conversation used Dialog on 200', () async {
-    final client = MockClient((url) async {
+    final client = MockClient((url, {body}) async {
       if (url.path == '/api/conversation/c1') {
         return http.Response(
           jsonEncode({
@@ -92,21 +110,24 @@ void main() {
             "dialog": [
               {"text": "hello"},
               {
-                "spells": [
-                  {
-                    "original_spell_name": "Test Spell",
-                    "grammarian_spell": {
-                      "name": "Test Spell",
-                      "school": "Evocation",
-                      "level": "3rd",
-                      "casting_time": "1 action",
-                      "range": "150 feet",
-                      "components": "V, S, M",
-                      "duration": "Instantaneous",
-                      "description": "A test spell.",
+                "sage_answer": {
+                  "answer_description": "Here is a test spell.",
+                  "grammarian_spells": [
+                    {
+                      "original_spell_name": "Test Spell",
+                      "grammarian_spell": {
+                        "name": "Test Spell",
+                        "school": "Evocation",
+                        "level": "3rd",
+                        "casting_time": "1 action",
+                        "range": "150 feet",
+                        "components": "V, S, M",
+                        "duration": "Instantaneous",
+                        "description": "A test spell.",
+                      },
                     },
-                  },
-                ],
+                  ],
+                },
               },
             ],
           }),
@@ -125,6 +146,9 @@ void main() {
     expect(response.dialog[0], isA<UserPrompt>());
     expect((response.dialog[0] as UserPrompt).text, 'hello');
     expect(response.dialog[1], isA<AppResponse>());
-    expect((response.dialog[1] as AppResponse).spells.length, 1);
+    expect(
+      (response.dialog[1] as AppResponse).sageAnswer.grammarianSpells.length,
+      1,
+    );
   });
 }

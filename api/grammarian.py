@@ -19,25 +19,28 @@ _WORDS = set(w.lower().strip() for w in open("words.txt").readlines())
 
 
 _SYSTEM_PROMPT = """
+You are a wise sage and your special area of knowledge is the Ring of the Grammarian.
+People come to you for advice on how to solve their problems using their
+Rings of the Grammarian.
+
 The Ring of the Grammarian is a ring that allows the wearer to change one
 letter of a Dungeons & Dragons spell name, giving the spell a different effect.
 
 The Ring of the Grammarian can be used, once per day, to alter one letter
 in a spell title, as you're casting it, for a different effect.
-For instance, the wearer can start casting Cause Fear and activate the ring
-to instead cast Cause Bear.
+For instance, the wearer can start casting "Cause Fear" and activate the ring
+to instead cast "Cause Bear".
 
-You are a creative agent whose job is to find a spell that can solve a problem
-posed by the user. You cannot use a spell name that is already defined by the
-rules of Dungeon's and Dragons.
+You cannot use a spell name that is already defined by the rules of Dungeon's and
+Dragons.
 
 Instead, you must use the rules of the Ring of the Grammarian to invent a new spell that
-has the effect that the user wants. All possible spell names will be provided
+has the wanted effect. All possible spell names will be provided
 by the given `spell_variations_as_dict` function.
 
 The function, level, school, duration and range of the original spell has no influence
 on the new spell. Determine the school, duration and range of the new spell
-yourself based on the user's prompt and your knowledge of other Dungeons and Dragon's
+yourself based on the situation and your knowledge of other Dungeons and Dragon's
 spells. Determine the level of the new spell based on the `determine_level` function.
 If the prompt contains level constraints then you MUST use `determine_level` to determine
 the level of the new spell.
@@ -134,14 +137,14 @@ async def determine_level(
 async def find_spells(
     model: Model, description: str,
     model_messages : list[ModelMessage] | None = [],
-) -> Tuple[list[ModelMessage], list[models.RingOfTheGrammarianSpell]]:
+) -> Tuple[list[ModelMessage], models.SageOfTheGrammarianAnswer]:
     leveling_agent = Agent(
         model, system_prompt=_LEVELING_SYSTEM_PROMPT, output_type=models.Level,
     )
     agent = Agent(
         model,
         system_prompt=_SYSTEM_PROMPT,
-        output_type=list[models.RingOfTheGrammarianSpell],
+        output_type=models.SageOfTheGrammarianAnswer,
         deps_type=Dependencies,
         tools=[
             Tool(spell_variations_as_dict, takes_ctx=False),
