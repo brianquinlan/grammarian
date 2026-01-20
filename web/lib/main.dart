@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
+import 'package:grammarian_web/spell_card.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -159,14 +160,14 @@ class _MainLayoutState extends State<MainLayout> {
 
   Future<void> _submitPrompt(String text) async {
     if (text.trim().isEmpty) return;
-    
+
     // 1. Check if this is a new conversation request
     final isNewConversation = _currentConversationId == null;
     final tempId = 'pending_${DateTime.now().millisecondsSinceEpoch}';
 
     setState(() {
       _isLoading = true;
-      
+
       if (isNewConversation) {
         // 2. Optimistic UI Update: Create placeholder conversation
         final tempSummary = ConversationSummary(
@@ -175,7 +176,7 @@ class _MainLayoutState extends State<MainLayout> {
           name: '...',
         );
         _conversations.insert(0, tempSummary);
-        
+
         _currentConversationId = tempId;
         _currentConversation = Conversation(
           conversationId: tempId,
@@ -190,30 +191,37 @@ class _MainLayoutState extends State<MainLayout> {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) _client.authToken = await user.getIdToken();
-      
+
       // 3. Make API Call (pass null if it's a new conversation, despite local temp ID)
-      final conversationIdToSend = isNewConversation ? null : _currentConversationId;
-      final response = await _client.prompt(text, conversationId: conversationIdToSend);
-      
+      final conversationIdToSend = isNewConversation
+          ? null
+          : _currentConversationId;
+      final response = await _client.prompt(
+        text,
+        conversationId: conversationIdToSend,
+      );
+
       if (isNewConversation) {
         // 4. Handle New Conversation Response: Fetch full details to get the generated name
-        final fullConversation = await _client.getConversation(response.conversationId);
-        
+        final fullConversation = await _client.getConversation(
+          response.conversationId,
+        );
+
         setState(() {
-           // Remove the temporary placeholder
-           _conversations.removeWhere((c) => c.conversationId == tempId);
-           
-           // Create summary with the real name and ID
-           final newSummary = ConversationSummary(
-             conversationId: fullConversation.conversationId,
-             createdOn: fullConversation.createdOn,
-             name: fullConversation.name,
-           );
-           
-           // Insert at top and update current view
-           _conversations.insert(0, newSummary);
-           _currentConversationId = fullConversation.conversationId;
-           _currentConversation = fullConversation;
+          // Remove the temporary placeholder
+          _conversations.removeWhere((c) => c.conversationId == tempId);
+
+          // Create summary with the real name and ID
+          final newSummary = ConversationSummary(
+            conversationId: fullConversation.conversationId,
+            createdOn: fullConversation.createdOn,
+            name: fullConversation.name,
+          );
+
+          // Insert at top and update current view
+          _conversations.insert(0, newSummary);
+          _currentConversationId = fullConversation.conversationId;
+          _currentConversation = fullConversation;
         });
       } else {
         // 5. Handle Existing Conversation Response: Refresh view
@@ -225,15 +233,15 @@ class _MainLayoutState extends State<MainLayout> {
       _promptController.clear();
     } catch (e) {
       if (mounted) {
-          _showError('Error finding spells: $e');
-          // Revert optimistic updates if failed
-          if (isNewConversation) {
-              setState(() {
-                  _conversations.removeWhere((c) => c.conversationId == tempId);
-                  _currentConversationId = null;
-                  _currentConversation = null;
-              });
-          }
+        _showError('Error finding spells: $e');
+        // Revert optimistic updates if failed
+        if (isNewConversation) {
+          setState(() {
+            _conversations.removeWhere((c) => c.conversationId == tempId);
+            _currentConversationId = null;
+            _currentConversation = null;
+          });
+        }
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -829,178 +837,6 @@ class InputArea extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class SpellCard extends StatelessWidget {
-  final RingOfTheGrammarianSpell spell;
-
-  const SpellCard({super.key, required this.spell});
-
-  @override
-  Widget build(BuildContext context) {
-    final gSpell = spell.grammarianSpell;
-
-    // Determine color based on school (mock-like colors)
-    Color iconColor = Colors.blue.shade300;
-    Color textColor = Colors.blue.shade400;
-    IconData iconData = Icons.auto_fix_high;
-
-    switch (gSpell.school) {
-      case School.evocation:
-        iconColor = Colors.blue.shade300;
-        textColor = Colors.blue.shade400;
-        iconData = Icons.flash_on;
-        break;
-      case School.necromancy:
-        iconColor = Colors.purple.shade300;
-        textColor = Colors.purple.shade400;
-        iconData = Icons.local_hospital;
-        break;
-      case School.conjuration:
-        iconColor = Colors.yellow.shade200;
-        textColor = Colors.yellow.shade400;
-        iconData = Icons.light_mode;
-        break;
-      default:
-        iconColor = AppColors.textLightGray;
-        textColor = AppColors.textGray;
-    }
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceCard,
-        border: Border.all(color: AppColors.surfaceBorder),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceBorder,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(iconData, color: iconColor),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      gSpell.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: AppColors.textWhite,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    Text(
-                      '${gSpell.level.jsonValue} ${gSpell.school.jsonValue}',
-                      style: TextStyle(
-                        color: textColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              IconButton(
-                icon: const Icon(
-                  Icons.copy,
-                  size: 20,
-                  color: AppColors.textGray,
-                ),
-                tooltip: 'Copy Markdown',
-                onPressed: () {
-                  final markdown =
-                      '''
-### ${gSpell.name}
-*${gSpell.level.jsonValue} ${gSpell.school.jsonValue}*
-
-**Casting Time:** ${gSpell.castingTime}
-**Range:** ${gSpell.range}
-**Components:** ${gSpell.components}
-**Duration:** ${gSpell.duration}
-**Original Spell:** ${spell.originalSpellName}
-
-${gSpell.description}
-''';
-                  Clipboard.setData(ClipboardData(text: markdown));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Copied to clipboard'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _buildDetailRow('Casting Time', gSpell.castingTime),
-          _buildDetailRow('Range', gSpell.range),
-          _buildDetailRow('Components', gSpell.components),
-          _buildDetailRow('Duration', gSpell.duration),
-          const SizedBox(height: 12),
-          Divider(color: AppColors.surfaceBorder.withOpacity(0.5)),
-          const SizedBox(height: 12),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Text(
-                gSpell.description,
-                style: const TextStyle(
-                  color: Color(0xFFd0c6dc),
-                  fontSize: 12,
-                  height: 1.5,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDetailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 80,
-            child: Text(
-              '$label:',
-              style: const TextStyle(
-                color: AppColors.textGray,
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(
-                color: AppColors.textLightGray,
-                fontSize: 11,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
