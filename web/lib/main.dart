@@ -718,7 +718,7 @@ class _AssistantMessageState extends State<AssistantMessage> {
                   ),
                   const SizedBox(height: 16),
                   SizedBox(
-                    height: 380,
+                    height: 500,
                     child: Scrollbar(
                       controller: _scrollController,
                       thumbVisibility: true,
