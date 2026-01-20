@@ -561,14 +561,10 @@ class ChatArea extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              'assets/ring.png',
-              width: 200,
-              height: 200,
-            ),
+            Image.asset('assets/ring.png', width: 200, height: 200),
             const SizedBox(height: 16),
             const Text(
-              'Greetings, adventurer.',
+              'Sage of the Grammarian',
               style: TextStyle(
                 fontSize: 18,
                 color: AppColors.textWhite,
@@ -577,7 +573,10 @@ class ChatArea extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'I am your arcane assistant. Tell me about your character,\nor ask for a specific spell to begin your journey.',
+              'The Ring of the Grammarian allows you to change one letter ' +
+                  'of a spell\'s name to create a new effect.\nDescribe a ' +
+                  'situation, and I will suggest the perfect Grammarian ' +
+                  'spell to help.',
               textAlign: TextAlign.center,
               style: TextStyle(color: AppColors.textGray, height: 1.5),
             ),
