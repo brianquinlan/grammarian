@@ -18,9 +18,9 @@ async def title_conversation(model: Model, description: str, existing_titles: li
     agent = Agent(model, output_type=constr(min_length=10, max_length=30))
 
     response = await agent.run(f"""
-Generate a descriptive title for a conversation that begins with this prompt:
+Generate a clever and succinct title for a conversation that begins with this prompt:
 {description}
 
-The title should be distinct from the following existing titles:
+Your title should be distinct from the following existing titles:
 {', '.join(existing_titles)}""")
     return response.output

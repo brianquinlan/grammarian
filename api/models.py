@@ -23,11 +23,11 @@ class Level(enum.Enum):
     SECOND = "2nd"
     THIRD = "3rd"
     FOURTH = "4th"
-    FIVE = "5th"
-    SIX = "6th"
-    SEVEN = "7th"
-    EIGHT = "8th"
-    NINE = "9th"
+    FIFTH = "5th"
+    SIXTH = "6th"
+    SEVENTH = "7th"
+    EIGHTH = "8th"
+    NINTH = "9th"
 
 
 class Spell(BaseModel):
