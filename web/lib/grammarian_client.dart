@@ -23,22 +23,32 @@ class GrammarianClient {
     String description, {
     String? conversationId,
   }) async {
-    final uri = Uri.parse('$baseUrl/prompt').replace(
-      queryParameters: {
-        'description': description,
-        if (conversationId != null) 'conversation_id': conversationId,
-        if (const bool.fromEnvironment('FAKE')) 'fake': 'fake',
-      },
+    final uri = Uri.parse('$baseUrl/prompt');
+    
+    // Construct the request body
+    final Map<String, dynamic> body = {
+      'description': description,
+      if (conversationId != null) 'conversation_id': conversationId,
+      if (const bool.fromEnvironment('FAKE')) 'fake': 'fake',
+    };
+
+    final headers = {
+      ..._headers,
+      'Content-Type': 'application/json',
+    };
+
+    final response = await client.post(
+      uri, 
+      headers: headers,
+      body: jsonEncode(body),
     );
-    print(uri);
-    final response = await client.get(uri, headers: _headers);
     print(response.body);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonMap = jsonDecode(response.body);
       return PromptResponse.fromJson(jsonMap);
     } else {
-      throw Exception('Failed to prompt: ${response.statusCode}');
+      throw Exception('Failed to prompt: ${response.statusCode} ${response.body}');
     }
   }
 

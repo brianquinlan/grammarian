@@ -71,8 +71,14 @@ async def conversation(conversation_id: str):
 @app.route("/prompt", methods=["GET", "POST"])
 async def prompt():
     user_id = get_user_id()
-    conversation_id = request.args.get("conversation_id")
-    description = request.args.get("description")
+    
+    if request.method == "POST":
+        data = await request.get_json()
+        conversation_id = data.get("conversation_id")
+        description = data.get("description")
+    else:
+        conversation_id = request.args.get("conversation_id")
+        description = request.args.get("description")
 
     if app.config.get("NO_LLM"):
         find_spells = fake_grammarian.find_spells
@@ -81,8 +87,8 @@ async def prompt():
         find_spells = grammarian.find_spells
         title_conversation = titler.title_conversation
 
-    if description is None:
-        raise Exception("no description")
+    if not description:
+        abort(400, description="Description is required")
     if not conversation_id:
         existing_titles = [c.name for c in storage.get_conversations(user_id)]
         title = await title_conversation(
