@@ -18,24 +18,46 @@ class SpellCard extends StatelessWidget {
     IconData iconData = Icons.auto_fix_high;
 
     switch (gSpell.school) {
-      case School.evocation:
-        iconColor = Colors.blue.shade300;
-        textColor = Colors.blue.shade400;
-        iconData = Icons.flash_on;
-        break;
-      case School.necromancy:
-        iconColor = Colors.purple.shade300;
-        textColor = Colors.purple.shade400;
-        iconData = Icons.local_hospital;
+      case School.abjuration:
+        iconColor = Colors.blueGrey.shade300;
+        textColor = Colors.blueGrey.shade400;
+        iconData = Icons.security;
         break;
       case School.conjuration:
         iconColor = Colors.yellow.shade200;
         textColor = Colors.yellow.shade400;
         iconData = Icons.light_mode;
         break;
-      default:
-        iconColor = AppColors.textLightGray;
-        textColor = AppColors.textGray;
+      case School.divination:
+        iconColor = Colors.cyan.shade300;
+        textColor = Colors.cyan.shade400;
+        iconData = Icons.visibility;
+        break;
+      case School.enchantment:
+        iconColor = Colors.pink.shade300;
+        textColor = Colors.pink.shade400;
+        iconData = Icons.favorite;
+        break;
+      case School.evocation:
+        iconColor = Colors.blue.shade300;
+        textColor = Colors.blue.shade400;
+        iconData = Icons.flash_on;
+        break;
+      case School.illusion:
+        iconColor = Colors.deepPurple.shade300;
+        textColor = Colors.deepPurple.shade400;
+        iconData = Icons.blur_on;
+        break;
+      case School.necromancy:
+        iconColor = Colors.purple.shade300;
+        textColor = Colors.purple.shade400;
+        iconData = Icons.local_hospital;
+        break;
+      case School.transmutation:
+        iconColor = Colors.orange.shade300;
+        textColor = Colors.orange.shade400;
+        iconData = Icons.transform;
+        break;
     }
 
     return Container(
