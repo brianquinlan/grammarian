@@ -1,18 +1,10 @@
-import argparse
 import asyncio
-import dataclasses
 import random
-import string
-import sys
-from typing import Generator, Tuple
-
-from pydantic_ai import Agent, ModelMessage, RunContext, Tool
-from pydantic_ai.models import Model
-
-
-from model_factory import get_model
+from typing import Tuple
 
 import models
+from pydantic_ai import ModelMessage
+from pydantic_ai.models import Model
 
 FIREFALL = models.RingOfTheGrammarianSpell(
     original_spell_name="Fireball",

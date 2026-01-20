@@ -5,14 +5,10 @@ import string
 import sys
 from typing import Generator, Tuple
 
-from pydantic import constr
+import models
+from model_factory import get_model
 from pydantic_ai import Agent, ModelMessage, RunContext, Tool
 from pydantic_ai.models import Model
-
-
-from model_factory import get_model
-
-import models
 
 _LETTERS = string.ascii_lowercase
 _WORDS = set(w.lower().strip() for w in open("words.txt").readlines())
@@ -135,11 +131,14 @@ async def determine_level(
 
 
 async def find_spells(
-    model: Model, description: str,
-    model_messages : list[ModelMessage] | None = [],
+    model: Model,
+    description: str,
+    model_messages: list[ModelMessage] | None = [],
 ) -> Tuple[list[ModelMessage], models.SageOfTheGrammarianAnswer]:
     leveling_agent = Agent(
-        model, system_prompt=_LEVELING_SYSTEM_PROMPT, output_type=models.Level,
+        model,
+        system_prompt=_LEVELING_SYSTEM_PROMPT,
+        output_type=models.Level,
     )
     agent = Agent(
         model,
@@ -152,9 +151,11 @@ async def find_spells(
         ],
     )
 
-    response = await agent.run(description,
-                               message_history=model_messages,
-                               deps=Dependencies(agent=leveling_agent))
+    response = await agent.run(
+        description,
+        message_history=model_messages,
+        deps=Dependencies(agent=leveling_agent),
+    )
     return response.all_messages(), response.output
 
 

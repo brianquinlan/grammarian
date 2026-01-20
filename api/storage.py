@@ -1,6 +1,7 @@
 from typing import Generator, cast
-from google.cloud import firestore
+
 import models
+from google.cloud import firestore
 
 _client: firestore.Client | None = None
 

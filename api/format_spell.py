@@ -1,14 +1,11 @@
 import argparse
-import sys
 import asyncio
-
-from pydantic_ai import Agent
-from pydantic_ai.models import Model
-
-from model_factory import get_model
-
+import sys
 
 import models
+from model_factory import get_model
+from pydantic_ai import Agent
+from pydantic_ai.models import Model
 
 _PROMPT = """
 Following this prompt is description of a Dungeons & Dragons 5e spell.
