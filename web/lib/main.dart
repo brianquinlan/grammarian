@@ -645,12 +645,14 @@ class ChatArea extends StatelessWidget {
                         bottomRight: Radius.circular(16),
                       ),
                     ),
-                    child: Text(
-                      item.text,
-                      style: const TextStyle(
-                        color: AppColors.textLightGray,
-                        fontSize: 15,
-                        height: 1.5,
+                    child: SelectionArea(
+                      child: Text(
+                        item.text,
+                        style: const TextStyle(
+                          color: AppColors.textLightGray,
+                          fontSize: 15,
+                          height: 1.5,
+                        ),
                       ),
                     ),
                   ),
@@ -708,12 +710,14 @@ class _AssistantMessageState extends State<AssistantMessage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  sageAnswer.answerDescription,
-                  style: const TextStyle(
-                    color: AppColors.textLightGray,
-                    fontSize: 15,
-                    height: 1.5,
+                SelectionArea(
+                  child: Text(
+                    sageAnswer.answerDescription,
+                    style: const TextStyle(
+                      color: AppColors.textLightGray,
+                      fontSize: 15,
+                      height: 1.5,
+                    ),
                   ),
                 ),
                 if (sageAnswer.grammarianSpells.isNotEmpty) ...[
