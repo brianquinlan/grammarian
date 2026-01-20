@@ -124,6 +124,8 @@ class SpellCard extends StatelessWidget {
           _buildDetailRow('Range', gSpell.range),
           _buildDetailRow('Components', gSpell.components),
           _buildDetailRow('Duration', gSpell.duration),
+          _buildDetailRow('Original Spell', spell.originalSpellName),
+
           const SizedBox(height: 12),
           Divider(color: AppColors.surfaceBorder.withOpacity(0.5)),
           const SizedBox(height: 12),
