@@ -239,3 +239,31 @@ class Conversation {
     );
   }
 }
+
+class ModelInfo {
+  final String name;
+  final String model;
+
+  ModelInfo({required this.name, required this.model});
+
+  factory ModelInfo.fromJson(Map<String, dynamic> json) {
+    return ModelInfo(
+      name: json['name'] as String,
+      model: json['model'] as String,
+    );
+  }
+}
+
+class ListModelsResponse {
+  final List<ModelInfo> models;
+
+  ListModelsResponse({required this.models});
+
+  factory ListModelsResponse.fromJson(Map<String, dynamic> json) {
+    return ListModelsResponse(
+      models: (json['models'] as List<dynamic>)
+          .map((e) => ModelInfo.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+}

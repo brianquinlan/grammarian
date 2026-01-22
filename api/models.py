@@ -138,3 +138,12 @@ class ListConversationsResponse(BaseModel):
 class PromptResponse(BaseModel):
     conversation_id: str
     sage_answer: SageOfTheGrammarianAnswer
+
+
+class ModelInfo(BaseModel):
+    name: str
+    model: str
+
+
+class ListModelsResponse(BaseModel):
+    models: list[ModelInfo]

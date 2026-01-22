@@ -22,23 +22,22 @@ class GrammarianClient {
   Future<PromptResponse> prompt(
     String description, {
     String? conversationId,
+    String? model,
   }) async {
     final uri = Uri.parse('$baseUrl/prompt');
-    
+
     // Construct the request body
     final Map<String, dynamic> body = {
       'description': description,
       if (conversationId != null) 'conversation_id': conversationId,
+      if (model != null) 'model': model,
       if (const bool.fromEnvironment('FAKE')) 'fake': 'fake',
     };
 
-    final headers = {
-      ..._headers,
-      'Content-Type': 'application/json',
-    };
+    final headers = {..._headers, 'Content-Type': 'application/json'};
 
     final response = await client.post(
-      uri, 
+      uri,
       headers: headers,
       body: jsonEncode(body),
     );
@@ -48,7 +47,9 @@ class GrammarianClient {
       final Map<String, dynamic> jsonMap = jsonDecode(response.body);
       return PromptResponse.fromJson(jsonMap);
     } else {
-      throw Exception('Failed to prompt: ${response.statusCode} ${response.body}');
+      throw Exception(
+        'Failed to prompt: ${response.statusCode} ${response.body}',
+      );
     }
   }
 
@@ -73,6 +74,18 @@ class GrammarianClient {
       return Conversation.fromJson(jsonMap);
     } else {
       throw Exception('Failed to load conversation: ${response.statusCode}');
+    }
+  }
+
+  Future<ListModelsResponse> getModels() async {
+    final uri = Uri.parse('$baseUrl/models');
+    final response = await client.get(uri, headers: _headers);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonMap = jsonDecode(response.body);
+      return ListModelsResponse.fromJson(jsonMap);
+    } else {
+      throw Exception('Failed to load models: ${response.statusCode}');
     }
   }
 }

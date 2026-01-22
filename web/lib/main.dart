@@ -96,8 +96,10 @@ class MainLayout extends StatefulWidget {
 class _MainLayoutState extends State<MainLayout> {
   final _client = GrammarianClient(client: http.Client());
   List<ConversationSummary> _conversations = [];
+  List<ModelInfo> _models = [];
   Conversation? _currentConversation;
   String? _currentConversationId;
+  String? _selectedModel;
   bool _isLoading = false;
   final TextEditingController _promptController = TextEditingController();
 
@@ -113,7 +115,7 @@ class _MainLayoutState extends State<MainLayout> {
       try {
         final token = await user.getIdToken();
         _client.authToken = token;
-        await _loadConversations();
+        await Future.wait([_loadConversations(), _loadModels()]);
       } catch (e) {
         if (mounted) _showError('Error initializing session: $e');
       }
@@ -129,6 +131,22 @@ class _MainLayoutState extends State<MainLayout> {
       });
     } catch (e) {
       if (mounted) _showError('Error loading history: $e');
+    }
+  }
+
+  Future<void> _loadModels() async {
+    try {
+      final response = await _client.getModels();
+      if (mounted) {
+        setState(() {
+          _models = response.models;
+          if (_models.isNotEmpty) {
+            _selectedModel = _models.first.model;
+          }
+        });
+      }
+    } catch (e) {
+      if (mounted) _showError('Error loading models: $e');
     }
   }
 
@@ -154,7 +172,13 @@ class _MainLayoutState extends State<MainLayout> {
     setState(() {
       _currentConversationId = null;
       _currentConversation = null;
+      _currentConversationId = null;
+      _currentConversation = null;
       _promptController.clear();
+      // Reset model selection to default (first available)
+      if (_models.isNotEmpty) {
+        _selectedModel = _models.first.model;
+      }
     });
   }
 
@@ -199,6 +223,7 @@ class _MainLayoutState extends State<MainLayout> {
       final response = await _client.prompt(
         text,
         conversationId: conversationIdToSend,
+        model: isNewConversation ? _selectedModel : null,
       );
 
       if (isNewConversation) {
@@ -290,6 +315,11 @@ class _MainLayoutState extends State<MainLayout> {
                           controller: _promptController,
                           isLoading: _isLoading,
                           onSubmit: _submitPrompt,
+                          models: _currentConversationId == null ? _models : [],
+                          selectedModel: _selectedModel,
+                          onModelChanged: (val) {
+                            setState(() => _selectedModel = val);
+                          },
                         ),
                       ],
                     ),
@@ -769,12 +799,18 @@ class InputArea extends StatelessWidget {
   final TextEditingController controller;
   final bool isLoading;
   final Function(String) onSubmit;
+  final List<ModelInfo> models;
+  final String? selectedModel;
+  final ValueChanged<String?>? onModelChanged;
 
   const InputArea({
     super.key,
     required this.controller,
     required this.isLoading,
     required this.onSubmit,
+    this.models = const [],
+    this.selectedModel,
+    this.onModelChanged,
   });
 
   @override
@@ -805,27 +841,73 @@ class InputArea extends StatelessWidget {
                 ),
               ],
             ),
-            child: CallbackShortcuts(
-              bindings: {
-                const SingleActivator(LogicalKeyboardKey.enter): () {
-                  if (!isLoading) onSubmit(controller.text);
-                },
-              },
-              child: TextField(
-                controller: controller,
-                enabled: !isLoading,
-                maxLines: 4,
-                minLines: 1,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
-                  hintText:
-                      'Ask for a spell, describe a scenario, or check rules...',
-                  hintStyle: TextStyle(color: AppColors.textGray),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CallbackShortcuts(
+                  bindings: {
+                    const SingleActivator(LogicalKeyboardKey.enter): () {
+                      if (!isLoading) onSubmit(controller.text);
+                    },
+                  },
+                  child: TextField(
+                    controller: controller,
+                    enabled: !isLoading,
+                    maxLines: 4,
+                    minLines: 1,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                      hintText:
+                          'Ask for a spell, describe a scenario, or check rules...',
+                      hintStyle: TextStyle(color: AppColors.textGray),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.all(16),
+                    ),
+                    onSubmitted: onSubmit,
+                  ),
                 ),
-                onSubmitted: onSubmit,
-              ),
+                if (models.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          decoration: BoxDecoration(
+                            color: AppColors.backgroundDark.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: AppColors.surfaceBorder.withOpacity(0.5),
+                            ),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: selectedModel,
+                              dropdownColor: AppColors.surfaceCard,
+                              style: const TextStyle(
+                                color: AppColors.textLightGray,
+                                fontSize: 13,
+                              ),
+                              icon: const Icon(
+                                Icons.arrow_drop_down,
+                                color: AppColors.textGray,
+                                size: 18,
+                              ),
+                              isDense: true,
+                              items: models.map((m) {
+                                return DropdownMenuItem(
+                                  value: m.model,
+                                  child: Text(m.name),
+                                );
+                              }).toList(),
+                              onChanged: onModelChanged,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
             ),
           ),
         ),

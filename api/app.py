@@ -1,4 +1,5 @@
 import argparse
+from typing import cast
 import uuid
 
 import fake_grammarian
@@ -9,8 +10,9 @@ import models
 import storage
 import titler
 from firebase_admin import auth
-from model_factory import get_model
+from model_factory import get_model, AVAILABLE_MODELS
 from quart import Quart, abort, request
+from pydantic_ai.models import Model
 
 # Initialize Firebase Admin
 try:
@@ -18,7 +20,7 @@ try:
 except ValueError:
     firebase_admin.initialize_app()
 
-_MODEL = get_model()
+
 
 app = Quart(__name__)
 
@@ -42,6 +44,20 @@ def get_user_id():
     except Exception as e:
         print(f"Auth error: {e}")
         abort(401, description="Invalid token")
+
+
+
+@app.route("/models", methods=["GET"])
+async def list_models():
+    models_list = [
+        models.ModelInfo(name=name, model=model)
+        for name, model in AVAILABLE_MODELS.items()
+    ]
+    return (
+        models.ListModelsResponse(models=models_list).model_dump_json(),
+        200,
+        {"Content-Type": "application/json"},
+    )
 
 
 @app.route("/conversations", methods=["GET"])
@@ -77,34 +93,46 @@ async def prompt():
         data = await request.get_json()
         conversation_id = data.get("conversation_id")
         description = data.get("description")
+        model_name = data.get("model")
     else:
         conversation_id = request.args.get("conversation_id")
         description = request.args.get("description")
+        model_name = request.args.get("model")
 
     if app.config.get("NO_LLM"):
         find_spells = fake_grammarian.find_spells
         title_conversation = fake_titler.title_conversation
+        model = cast(Model, None)
     else:
         find_spells = grammarian.find_spells
         title_conversation = titler.title_conversation
+        model = get_model(model_name)
 
     if not description:
         abort(400, description="Description is required")
     if not conversation_id:
         existing_titles = [c.name for c in storage.get_conversations(user_id)]
         title = await title_conversation(
-            _MODEL,
+            model,
             description=description,
             existing_titles=existing_titles,
         )
-        conversation = models.Conversation(conversation_id=str(uuid.uuid4()), name=title)
+        conversation = models.Conversation(
+            conversation_id=str(uuid.uuid4()), name=title, model=model_name or ""
+        )
     else:
         conversation = storage.get_conversation(user_id, conversation_id)
+        if conversation.model:
+            if app.config.get("NO_LLM"):
+                model = cast(Model, None)
+            else:
+                model = get_model(conversation.model)
+
 
 
 
     all_messages, sage_answer = await find_spells(
-        _MODEL, description, conversation.all_messages
+        model, description, conversation.all_messages
     )
     conversation.all_messages = all_messages
     conversation.dialog.extend(
