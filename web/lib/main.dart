@@ -391,17 +391,20 @@ class _MainLayoutState extends State<MainLayout> {
                             isLoading: isProcessing,
                           ),
                         ),
-                        InputArea(
-                          controller: _promptController,
-                          focusNode: _focusNode,
-                          isLoading: _isFetching || isProcessing,
-                          onSubmit: _submitPrompt,
-                          models: _currentConversationId == null ? _models : [],
-                          selectedModel: _selectedModel,
-                          onModelChanged: (val) {
-                            setState(() => _selectedModel = val);
-                          },
-                        ),
+                        if (!isProcessing)
+                          InputArea(
+                            controller: _promptController,
+                            focusNode: _focusNode,
+                            isLoading: _isFetching || isProcessing,
+                            onSubmit: _submitPrompt,
+                            models: _currentConversationId == null
+                                ? _models
+                                : [],
+                            selectedModel: _selectedModel,
+                            onModelChanged: (val) {
+                              setState(() => _selectedModel = val);
+                            },
+                          ),
                       ],
                     ),
                   ),
