@@ -45,7 +45,7 @@ class InputArea extends StatelessWidget {
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -87,10 +87,14 @@ class InputArea extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8),
                           decoration: BoxDecoration(
-                            color: AppColors.backgroundDark.withOpacity(0.5),
+                            color: AppColors.backgroundDark.withValues(
+                              alpha: 0.5,
+                            ),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: AppColors.surfaceBorder.withOpacity(0.5),
+                              color: AppColors.surfaceBorder.withValues(
+                                alpha: 0.5,
+                              ),
                             ),
                           ),
                           child: DropdownButtonHideUnderline(

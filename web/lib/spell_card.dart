@@ -127,7 +127,7 @@ class SpellCard extends StatelessWidget {
           _buildDetailRow('Original Spell', spell.originalSpellName),
 
           const SizedBox(height: 12),
-          Divider(color: AppColors.surfaceBorder.withOpacity(0.5)),
+          Divider(color: AppColors.surfaceBorder.withValues(alpha: 0.5)),
           const SizedBox(height: 12),
           Expanded(
             child: SingleChildScrollView(

@@ -13,7 +13,7 @@ class TopHeader extends StatelessWidget {
       height: 64,
       padding: const EdgeInsets.symmetric(horizontal: 24),
       decoration: BoxDecoration(
-        color: AppColors.backgroundDark.withOpacity(0.8),
+        color: AppColors.backgroundDark.withValues(alpha: 0.8),
         border: const Border(
           bottom: BorderSide(color: AppColors.surfaceBorder),
         ),
@@ -27,9 +27,11 @@ class TopHeader extends StatelessWidget {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.2),
+                  color: AppColors.primary.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.2),
+                  ),
                 ),
                 child: const Icon(
                   Icons.shield,

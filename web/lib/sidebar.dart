@@ -118,9 +118,9 @@ class Sidebar extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 2),
         decoration: isSelected
             ? BoxDecoration(
-                color: AppColors.surfaceBorder.withOpacity(0.4),
+                color: AppColors.surfaceBorder.withValues(alpha: 0.4),
                 border: Border.all(
-                  color: AppColors.surfaceBorder.withOpacity(0.5),
+                  color: AppColors.surfaceBorder.withValues(alpha: 0.5),
                 ),
                 borderRadius: BorderRadius.circular(8),
               )
