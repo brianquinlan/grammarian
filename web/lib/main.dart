@@ -11,6 +11,7 @@ import 'grammarian_client.dart';
 import 'models.dart';
 import 'login_page.dart';
 import 'firebase_options.dart';
+import 'package:uuid/uuid.dart';
 
 // --- Theme Constants ---
 class AppColors {
@@ -102,11 +103,20 @@ class _MainLayoutState extends State<MainLayout> {
   String? _selectedModel;
   bool _isLoading = false;
   final TextEditingController _promptController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+  final _uuid = const Uuid();
 
   @override
   void initState() {
     super.initState();
     _initAndLoad();
+  }
+
+  @override
+  void dispose() {
+    _promptController.dispose();
+    _focusNode.dispose();
+    super.dispose();
   }
 
   Future<void> _initAndLoad() async {
@@ -187,7 +197,7 @@ class _MainLayoutState extends State<MainLayout> {
 
     // 1. Check if this is a new conversation request
     final isNewConversation = _currentConversationId == null;
-    final tempId = 'pending_${DateTime.now().millisecondsSinceEpoch}';
+    final tempId = _uuid.v4();
 
     setState(() {
       _isLoading = true;
@@ -216,15 +226,20 @@ class _MainLayoutState extends State<MainLayout> {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) _client.authToken = await user.getIdToken();
 
-      // 3. Make API Call (pass null if it's a new conversation, despite local temp ID)
-      final conversationIdToSend = isNewConversation
-          ? null
-          : _currentConversationId;
-      final response = await _client.prompt(
-        text,
-        conversationId: conversationIdToSend,
-        model: isNewConversation ? _selectedModel : null,
-      );
+      // 3. Make API Call
+      PromptResponse response;
+      if (isNewConversation) {
+        response = await _client.createConversation(
+          tempId,
+          text,
+          _selectedModel ?? 'gemini-1.5-flash',
+        );
+      } else {
+        response = await _client.updateConversation(
+          _currentConversationId!,
+          text,
+        );
+      }
 
       if (isNewConversation) {
         // 4. Handle New Conversation Response: Fetch full details to get the generated name
@@ -233,18 +248,19 @@ class _MainLayoutState extends State<MainLayout> {
         );
 
         setState(() {
-          // Remove the temporary placeholder
-          _conversations.removeWhere((c) => c.conversationId == tempId);
-
-          // Create summary with the real name and ID
-          final newSummary = ConversationSummary(
-            conversationId: fullConversation.conversationId,
-            createdOn: fullConversation.createdOn,
-            name: fullConversation.name,
+          // Find the temporary summary and update it
+          final index = _conversations.indexWhere(
+            (c) => c.conversationId == tempId,
           );
+          if (index != -1) {
+            _conversations[index] = ConversationSummary(
+              conversationId: fullConversation.conversationId,
+              createdOn: fullConversation.createdOn,
+              name: fullConversation.name,
+            );
+          }
 
-          // Insert at top and update current view
-          _conversations.insert(0, newSummary);
+          // Update current conversation
           _currentConversationId = fullConversation.conversationId;
           _currentConversation = fullConversation;
         });
@@ -313,6 +329,7 @@ class _MainLayoutState extends State<MainLayout> {
                         ),
                         InputArea(
                           controller: _promptController,
+                          focusNode: _focusNode,
                           isLoading: _isLoading,
                           onSubmit: _submitPrompt,
                           models: _currentConversationId == null ? _models : [],
@@ -797,6 +814,7 @@ class SageAvatar extends StatelessWidget {
 
 class InputArea extends StatelessWidget {
   final TextEditingController controller;
+  final FocusNode focusNode;
   final bool isLoading;
   final Function(String) onSubmit;
   final List<ModelInfo> models;
@@ -806,6 +824,7 @@ class InputArea extends StatelessWidget {
   const InputArea({
     super.key,
     required this.controller,
+    required this.focusNode,
     required this.isLoading,
     required this.onSubmit,
     this.models = const [],
@@ -852,7 +871,8 @@ class InputArea extends StatelessWidget {
                   },
                   child: TextField(
                     controller: controller,
-                    enabled: !isLoading,
+                    focusNode: focusNode,
+                    readOnly: isLoading,
                     maxLines: 4,
                     minLines: 1,
                     style: const TextStyle(color: Colors.white),
@@ -863,7 +883,9 @@ class InputArea extends StatelessWidget {
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.all(16),
                     ),
-                    onSubmitted: onSubmit,
+                    onSubmitted: (text) {
+                      if (!isLoading) onSubmit(text);
+                    },
                   ),
                 ),
                 if (models.isNotEmpty)

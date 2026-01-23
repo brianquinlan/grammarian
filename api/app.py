@@ -21,22 +21,23 @@ except ValueError:
     firebase_admin.initialize_app()
 
 
-
 app = Quart(__name__)
+
 
 @app.after_request
 async def add_cors_headers(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Methods"] = "GET, PUT, POST, OPTIONS"
     return response
+
 
 def get_user_id():
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         print(f"Missing or invalid auth header: {auth_header}")
         abort(401, description="Missing or invalid Authorization header")
-    
+
     token = auth_header.split("Bearer ")[1]
     try:
         decoded_token = auth.verify_id_token(token)
@@ -44,7 +45,6 @@ def get_user_id():
     except Exception as e:
         print(f"Auth error: {e}")
         abort(401, description="Invalid token")
-
 
 
 @app.route("/models", methods=["GET"])
@@ -79,65 +79,31 @@ async def conversations():
 
 
 @app.route("/conversation/<conversation_id>", methods=["GET"])
-async def conversation(conversation_id: str):
+async def get_conversation(conversation_id: str):
     user_id = get_user_id()
     conversation = storage.get_conversation(user_id, conversation_id)
     return conversation.model_dump_json(), 200, {"Content-Type": "application/json"}
 
 
-@app.route("/prompt", methods=["GET", "POST"])
-async def prompt():
-    user_id = get_user_id()
-    
-    if request.method == "POST":
-        data = await request.get_json()
-        conversation_id = data.get("conversation_id")
-        description = data.get("description")
-        model_name = data.get("model")
-    else:
-        conversation_id = request.args.get("conversation_id")
-        description = request.args.get("description")
-        model_name = request.args.get("model")
-
+async def _respond(user_id: str, conversation: models.Conversation, description: str):
     if app.config.get("NO_LLM"):
         find_spells = fake_grammarian.find_spells
-        title_conversation = fake_titler.title_conversation
         model = cast(Model, None)
     else:
         find_spells = grammarian.find_spells
-        title_conversation = titler.title_conversation
-        model = get_model(model_name)
-
-    if not description:
-        abort(400, description="Description is required")
-    if not conversation_id:
-        existing_titles = [c.name for c in storage.get_conversations(user_id)]
-        title = await title_conversation(
-            model,
-            description=description,
-            existing_titles=existing_titles,
-        )
-        conversation = models.Conversation(
-            conversation_id=str(uuid.uuid4()), name=title, model=model_name or ""
-        )
-    else:
-        conversation = storage.get_conversation(user_id, conversation_id)
-        if conversation.model:
-            if app.config.get("NO_LLM"):
-                model = cast(Model, None)
-            else:
-                model = get_model(conversation.model)
-
-
-
+        model = get_model(conversation.model)
 
     all_messages, sage_answer = await find_spells(
         model, description, conversation.all_messages
     )
     conversation.all_messages = all_messages
     conversation.dialog.extend(
-        [models.UserPrompt(text=description), models.AppResponse(sage_answer=sage_answer)]
+        [
+            models.UserPrompt(text=description),
+            models.AppResponse(sage_answer=sage_answer),
+        ]
     )
+    print(f'Saying conversation: {conversation}')
     storage.save_conversation(user_id, conversation)
 
     response = models.PromptResponse(
@@ -146,10 +112,58 @@ async def prompt():
     return response.model_dump_json(), 200, {"Content-Type": "application/json"}
 
 
+@app.route("/conversation/<conversation_id>", methods=["PUT"])
+async def create_conversation(conversation_id: str):
+    user_id = get_user_id()
+
+    data = await request.get_json()
+
+    conversation_id = data.get("conversation_id")
+    if not conversation_id:
+        abort(400, description="conversation_id is required")
+
+    description = data.get("description")
+    if not description:
+        abort(400, description="description is required")
+
+    model_name = data.get("model")
+    if not model_name:
+        abort(400, description="model is required")
+
+
+    if app.config.get("NO_LLM"):
+        title_conversation = fake_titler.title_conversation
+    else:
+        title_conversation = titler.title_conversation
+
+    existing_titles = [c.name for c in storage.get_conversations(user_id)]
+    title = await title_conversation(
+        description=description,
+        existing_titles=existing_titles,
+    )
+    conversation = models.Conversation(
+        conversation_id=conversation_id, name=title, model=model_name
+    )
+    return await _respond(user_id, conversation, description)
+
+
+@app.route("/conversation/<conversation_id>", methods=["POST"])
+async def update_conversation(conversation_id: str):
+    user_id = get_user_id()
+
+    data = await request.get_json()
+    description = data.get("description")
+    if not description:
+        abort(400, description="description is required")
+
+    conversation = storage.get_conversation(user_id, conversation_id)
+    return await _respond(user_id, conversation, description)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--no-llm", action="store_true", help="Use fake LLM")
     args = parser.parse_args()
-    
+
     app.config["NO_LLM"] = args.no_llm
     app.run(debug=True)

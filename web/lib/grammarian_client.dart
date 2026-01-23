@@ -19,18 +19,46 @@ class GrammarianClient {
     if (authToken != null) 'Authorization': 'Bearer $authToken',
   };
 
-  Future<PromptResponse> prompt(
-    String description, {
-    String? conversationId,
-    String? model,
-  }) async {
-    final uri = Uri.parse('$baseUrl/prompt');
+  Future<PromptResponse> createConversation(
+    String conversationId,
+    String description,
+    String model,
+  ) async {
+    final uri = Uri.parse('$baseUrl/conversation/$conversationId');
 
-    // Construct the request body
+    final Map<String, dynamic> body = {
+      'conversation_id': conversationId,
+      'description': description,
+      'model': model,
+      if (const bool.fromEnvironment('FAKE')) 'fake': 'fake',
+    };
+
+    final headers = {..._headers, 'Content-Type': 'application/json'};
+
+    final response = await client.put(
+      uri,
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonMap = jsonDecode(response.body);
+      return PromptResponse.fromJson(jsonMap);
+    } else {
+      throw Exception(
+        'Failed to create conversation: ${response.statusCode} ${response.body}',
+      );
+    }
+  }
+
+  Future<PromptResponse> updateConversation(
+    String conversationId,
+    String description,
+  ) async {
+    final uri = Uri.parse('$baseUrl/conversation/$conversationId');
+
     final Map<String, dynamic> body = {
       'description': description,
-      if (conversationId != null) 'conversation_id': conversationId,
-      if (model != null) 'model': model,
       if (const bool.fromEnvironment('FAKE')) 'fake': 'fake',
     };
 
@@ -41,14 +69,13 @@ class GrammarianClient {
       headers: headers,
       body: jsonEncode(body),
     );
-    print(response.body);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonMap = jsonDecode(response.body);
       return PromptResponse.fromJson(jsonMap);
     } else {
       throw Exception(
-        'Failed to prompt: ${response.statusCode} ${response.body}',
+        'Failed to update conversation: ${response.statusCode} ${response.body}',
       );
     }
   }

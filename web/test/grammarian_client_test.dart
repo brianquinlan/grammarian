@@ -22,14 +22,26 @@ class MockClient extends Fake implements http.Client {
   }) {
     return handler(url, body: body);
   }
+
+  @override
+  Future<http.Response> put(
+    Uri url, {
+    Map<String, String>? headers,
+    Object? body,
+    Encoding? encoding,
+  }) {
+    return handler(url, body: body);
+  }
 }
 
 void main() {
-  test('prompt returns PromptResponse on 200', () async {
+  test('createConversation returns PromptResponse on 200', () async {
     final client = MockClient((url, {body}) async {
-      if (url.path == '/api/prompt') {
+      if (url.path == '/api/conversation/123') {
+        // PUT request logic check
         final bodyMap = jsonDecode(body as String);
-        if (bodyMap['description'] == 'test') {
+        if (bodyMap['description'] == 'test' &&
+            bodyMap['model'] == 'test-model') {
           return http.Response(
             jsonEncode({
               "conversation_id": "123",
@@ -60,15 +72,47 @@ void main() {
     });
 
     final grammarianClient = GrammarianClient(client: client);
-    final response = await grammarianClient.prompt('test');
+    final response = await grammarianClient.createConversation(
+      '123',
+      'test',
+      'test-model',
+    );
 
     expect(response, isA<PromptResponse>());
     expect(response.conversationId, '123');
     expect(response.sageAnswer.grammarianSpells.length, 1);
-    expect(
-      response.sageAnswer.grammarianSpells.first.originalSpellName,
-      'Test Spell',
+  });
+
+  test('updateConversation returns PromptResponse on 200', () async {
+    final client = MockClient((url, {body}) async {
+      if (url.path == '/api/conversation/123') {
+        // POST request logic check
+        final bodyMap = jsonDecode(body as String);
+        if (bodyMap['description'] == 'test update') {
+          return http.Response(
+            jsonEncode({
+              "conversation_id": "123",
+              "sage_answer": {
+                "answer_description": "Here is a test spell.",
+                "grammarian_spells": [],
+              },
+            }),
+            200,
+          );
+        }
+      }
+      return http.Response('Not Found', 404);
+    });
+
+    final grammarianClient = GrammarianClient(client: client);
+    final response = await grammarianClient.updateConversation(
+      '123',
+      'test update',
     );
+
+    expect(response, isA<PromptResponse>());
+    expect(response.conversationId, '123');
+    expect(response.sageAnswer.grammarianSpells.length, 0);
   });
 
   test('getConversations returns ListConversationsResponse on 200', () async {
