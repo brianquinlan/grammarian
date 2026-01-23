@@ -30,7 +30,6 @@ class GrammarianClient {
       'conversation_id': conversationId,
       'description': description,
       'model': model,
-      if (const bool.fromEnvironment('FAKE')) 'fake': 'fake',
     };
 
     final headers = {..._headers, 'Content-Type': 'application/json'};
@@ -57,10 +56,7 @@ class GrammarianClient {
   ) async {
     final uri = Uri.parse('$baseUrl/conversation/$conversationId');
 
-    final Map<String, dynamic> body = {
-      'description': description,
-      if (const bool.fromEnvironment('FAKE')) 'fake': 'fake',
-    };
+    final Map<String, dynamic> body = {'description': description};
 
     final headers = {..._headers, 'Content-Type': 'application/json'};
 
