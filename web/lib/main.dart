@@ -360,7 +360,7 @@ class _MainLayoutState extends State<MainLayout> {
                         Expanded(
                           child: ChatArea(
                             conversation: _currentConversation,
-                            isLoading: _isFetching || isProcessing,
+                            isLoading: isProcessing,
                           ),
                         ),
                         InputArea(
