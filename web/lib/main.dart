@@ -35,14 +35,45 @@ Future<void> main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     if (kDebugMode) {
-      try {
-        await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-      } catch (e) {
-        print('Failed to use Firebase Auth Emulator: $e');
-      }
+      await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
     }
   } catch (e) {
-    print('Firebase initialization failed: $e');
+    runApp(
+      MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData.dark(),
+        home: Scaffold(
+          backgroundColor: const Color(0xFF131117),
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.red, size: 64),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Application Initialization Failed',
+                    style: TextStyle(
+                      fontSize: 24,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Firebase initialization failed: $e',
+                    style: const TextStyle(color: Colors.redAccent),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    return;
   }
   runApp(const MyApp());
 }
