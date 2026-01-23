@@ -1,5 +1,4 @@
 import argparse
-from typing import cast
 
 import fake_grammarian
 import fake_titler
@@ -11,7 +10,6 @@ import titler
 from firebase_admin import auth
 from model_factory import get_model, AVAILABLE_MODELS
 from quart import Quart, abort, request
-from pydantic_ai.models import Model
 
 # Initialize Firebase Admin
 try:

@@ -1,10 +1,9 @@
 import datetime
 import enum
-from typing import Annotated, TextIO
+from typing import Annotated
 
 from pydantic import BaseModel, Field, StringConstraints
 from pydantic_ai import ModelMessage
-from termcolor import colored
 
 
 class School(enum.Enum):

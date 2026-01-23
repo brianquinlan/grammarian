@@ -4,7 +4,6 @@ from typing import Tuple
 
 import models
 from pydantic_ai import ModelMessage
-from pydantic_ai.models import Model
 
 FIREFALL = models.RingOfTheGrammarianSpell(
     original_spell_name="Fireball",

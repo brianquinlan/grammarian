@@ -1,12 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
-import 'package:grammarian_web/assistant_message.dart';
 import 'package:grammarian_web/chat_area.dart';
 import 'package:grammarian_web/input_area.dart';
 import 'package:grammarian_web/sidebar.dart';
-import 'package:grammarian_web/spell_card.dart';
 import 'package:grammarian_web/top_header.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_core/firebase_core.dart';

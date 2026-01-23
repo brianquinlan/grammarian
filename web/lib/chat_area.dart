@@ -33,10 +33,10 @@ class ChatArea extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'The Ring of the Grammarian allows you to change one letter ' +
-                  'of a spell\'s name to create a new effect.\nDescribe a ' +
-                  'situation, and I will suggest the perfect Grammarian ' +
-                  'spell to help.',
+              'The Ring of the Grammarian allows you to change one letter '
+              'of a spell\'s name to create a new effect.\nDescribe a '
+              'situation, and I will suggest the perfect Grammarian '
+              'spell to help.',
               textAlign: TextAlign.center,
               style: TextStyle(color: AppColors.textGray, height: 1.5),
             ),

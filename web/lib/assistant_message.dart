@@ -67,7 +67,7 @@ class _AssistantMessageState extends State<AssistantMessage> {
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.only(bottom: 12),
                         itemCount: sageAnswer.grammarianSpells.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 16),
+                        separatorBuilder: (_, _) => const SizedBox(width: 16),
                         itemBuilder: (context, i) => SizedBox(
                           width: 300,
                           child: SpellCard(
