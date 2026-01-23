@@ -101,7 +101,9 @@ class _MainLayoutState extends State<MainLayout> {
   Conversation? _currentConversation;
   String? _currentConversationId;
   String? _selectedModel;
-  bool _isLoading = false;
+  final Set<String> _pendingRequests = {};
+  final Map<String, Conversation> _pendingConversationState = {};
+  bool _isFetching = false;
   final TextEditingController _promptController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   final _uuid = const Uuid();
@@ -162,9 +164,17 @@ class _MainLayoutState extends State<MainLayout> {
 
   Future<void> _selectConversation(String conversationId) async {
     setState(() {
-      _isLoading = true;
+      _isFetching = true;
       _currentConversationId = conversationId;
     });
+
+    if (_pendingConversationState.containsKey(conversationId)) {
+      setState(() {
+        _currentConversation = _pendingConversationState[conversationId];
+        _isFetching = false;
+      });
+      return;
+    }
 
     try {
       final user = FirebaseAuth.instance.currentUser;
@@ -174,7 +184,7 @@ class _MainLayoutState extends State<MainLayout> {
     } catch (e) {
       if (mounted) _showError('Error loading conversation: $e');
     } finally {
-      setState(() => _isLoading = false);
+      setState(() => _isFetching = false);
     }
   }
 
@@ -198,9 +208,10 @@ class _MainLayoutState extends State<MainLayout> {
     // 1. Check if this is a new conversation request
     final isNewConversation = _currentConversationId == null;
     final tempId = _uuid.v4();
+    final currentId = isNewConversation ? tempId : _currentConversationId!;
 
     setState(() {
-      _isLoading = true;
+      _pendingRequests.add(currentId);
 
       if (isNewConversation) {
         // 2. Optimistic UI Update: Create placeholder conversation
@@ -219,7 +230,13 @@ class _MainLayoutState extends State<MainLayout> {
           model: 'pending',
           dialog: [UserPrompt(text: text)],
         );
+      } else {
+        // For existing conversation, optimistically add user prompt to UI immediately if needed,
+        // but current implementation relies on server response.
+        // Let's at least clear input so user knows it's sent.
+        _promptController.clear();
       }
+      _pendingConversationState[currentId] = _currentConversation!;
     });
 
     try {
@@ -235,11 +252,10 @@ class _MainLayoutState extends State<MainLayout> {
           _selectedModel ?? 'gemini-1.5-flash',
         );
       } else {
-        response = await _client.updateConversation(
-          _currentConversationId!,
-          text,
-        );
+        response = await _client.updateConversation(currentId, text);
       }
+
+      if (!mounted) return;
 
       if (isNewConversation) {
         // 4. Handle New Conversation Response: Fetch full details to get the generated name
@@ -260,18 +276,22 @@ class _MainLayoutState extends State<MainLayout> {
             );
           }
 
-          // Update current conversation
-          _currentConversationId = fullConversation.conversationId;
-          _currentConversation = fullConversation;
+          // Update current conversation if user is still looking at it
+          if (_currentConversationId == tempId) {
+            _currentConversationId = fullConversation.conversationId;
+            _currentConversation = fullConversation;
+          }
         });
       } else {
-        // 5. Handle Existing Conversation Response: Refresh view
-        if (_currentConversationId != null) {
-          await _selectConversation(_currentConversationId!);
+        // 5. Handle Existing Conversation Response: Refresh view if looking at it
+        if (_currentConversationId == currentId) {
+          // We can just fetch the updated conversation
+          final updatedConv = await _client.getConversation(currentId);
+          setState(() {
+            _currentConversation = updatedConv;
+          });
         }
       }
-
-      _promptController.clear();
     } catch (e) {
       if (mounted) {
         _showError('Error finding spells: $e');
@@ -279,13 +299,20 @@ class _MainLayoutState extends State<MainLayout> {
         if (isNewConversation) {
           setState(() {
             _conversations.removeWhere((c) => c.conversationId == tempId);
-            _currentConversationId = null;
-            _currentConversation = null;
+            if (_currentConversationId == tempId) {
+              _currentConversationId = null;
+              _currentConversation = null;
+            }
           });
         }
       }
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() {
+          _pendingRequests.remove(currentId);
+          _pendingConversationState.remove(currentId);
+        });
+      }
     }
   }
 
@@ -297,6 +324,10 @@ class _MainLayoutState extends State<MainLayout> {
 
   @override
   Widget build(BuildContext context) {
+    final isProcessing =
+        _currentConversationId != null &&
+        _pendingRequests.contains(_currentConversationId);
+
     return Scaffold(
       body: Column(
         children: [
@@ -324,13 +355,13 @@ class _MainLayoutState extends State<MainLayout> {
                         Expanded(
                           child: ChatArea(
                             conversation: _currentConversation,
-                            isLoading: _isLoading,
+                            isLoading: _isFetching || isProcessing,
                           ),
                         ),
                         InputArea(
                           controller: _promptController,
                           focusNode: _focusNode,
-                          isLoading: _isLoading,
+                          isLoading: _isFetching || isProcessing,
                           onSubmit: _submitPrompt,
                           models: _currentConversationId == null ? _models : [],
                           selectedModel: _selectedModel,
