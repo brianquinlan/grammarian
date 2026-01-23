@@ -131,7 +131,6 @@ GRAMMARIAN_SPELLS = [
 
 
 async def find_spells(
-    model: Model,
     description: str,
     model_messages: list[ModelMessage] | None = [],
     delay: float = 2.0,

@@ -87,21 +87,14 @@ async def get_conversation(conversation_id: str):
 
 async def _respond(user_id: str, conversation: models.Conversation, description: str):
     if app.config.get("NO_LLM"):
-        find_spells = fake_grammarian.find_spells
-        model = cast(Model, None)
-    else:
-        find_spells = grammarian.find_spells
-        model = get_model(conversation.model)
-
-    if app.config.get("NO_LLM"):
-        all_messages, sage_answer = await find_spells(
-            model,
+        all_messages, sage_answer = await fake_grammarian.find_spells(
             description,
             conversation.all_messages,
             delay=app.config.get("FAKE_GRAMMARIAN_SAGE_DELAY", 2.0),
         )
     else:
-        all_messages, sage_answer = await find_spells(
+        model = get_model(conversation.model)
+        all_messages, sage_answer = await grammarian.find_spells(
             model, description, conversation.all_messages
         )
     conversation.all_messages = all_messages
