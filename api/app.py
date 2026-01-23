@@ -1,6 +1,5 @@
 import argparse
 from typing import cast
-import uuid
 
 import fake_grammarian
 import fake_titler
