@@ -103,7 +103,6 @@ async def _respond(user_id: str, conversation: models.Conversation, description:
             models.AppResponse(sage_answer=sage_answer),
         ]
     )
-    print(f'Saying conversation: {conversation}')
     storage.save_conversation(user_id, conversation)
 
     response = models.PromptResponse(
