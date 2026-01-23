@@ -134,8 +134,9 @@ async def find_spells(
     model: Model,
     description: str,
     model_messages: list[ModelMessage] | None = [],
+    delay: float = 2.0,
 ) -> Tuple[list[ModelMessage], models.SageOfTheGrammarianAnswer]:
-    await asyncio.sleep(2)
+    await asyncio.sleep(delay)
 
     # Select 1 to N spells randomly
     num_spells = random.randint(1, len(GRAMMARIAN_SPELLS))

@@ -93,9 +93,17 @@ async def _respond(user_id: str, conversation: models.Conversation, description:
         find_spells = grammarian.find_spells
         model = get_model(conversation.model)
 
-    all_messages, sage_answer = await find_spells(
-        model, description, conversation.all_messages
-    )
+    if app.config.get("NO_LLM"):
+        all_messages, sage_answer = await find_spells(
+            model,
+            description,
+            conversation.all_messages,
+            delay=app.config.get("FAKE_GRAMMARIAN_SAGE_DELAY", 2.0),
+        )
+    else:
+        all_messages, sage_answer = await find_spells(
+            model, description, conversation.all_messages
+        )
     conversation.all_messages = all_messages
     conversation.dialog.extend(
         [
@@ -162,7 +170,14 @@ async def update_conversation(conversation_id: str):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--no-llm", action="store_true", help="Use fake LLM")
+    parser.add_argument(
+        "--fake-grammarian-sage-delay",
+        type=float,
+        default=2.0,
+        help="Delay in seconds for fake grammarian",
+    )
     args = parser.parse_args()
 
     app.config["NO_LLM"] = args.no_llm
+    app.config["FAKE_GRAMMARIAN_SAGE_DELAY"] = args.fake_grammarian_sage_delay
     app.run(debug=True)
