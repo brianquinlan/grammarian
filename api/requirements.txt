@@ -4,4 +4,3 @@ firebase-admin
 hypercorn
 pydantic
 pydantic-ai
-termcolor

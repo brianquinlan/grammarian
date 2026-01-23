@@ -157,18 +157,3 @@ async def find_spells(
         deps=Dependencies(agent=leveling_agent),
     )
     return response.all_messages(), response.output
-
-
-async def main():
-    parser = argparse.ArgumentParser(description="What the program does")
-    parser.add_argument("-d", "--description")
-    args = parser.parse_args()
-    model = get_model()
-
-    for spell in await find_spells(model, args.description):
-        spell.write_to_file(sys.stdout)
-        sys.stdout.write("\n")
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
