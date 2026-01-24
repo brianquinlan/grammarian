@@ -76,7 +76,8 @@ class InputArea extends StatelessWidget {
                         style: const TextStyle(color: Colors.white),
                         decoration: const InputDecoration(
                           hintText:
-                              'Ask for a spell, describe a scenario, or check rules...',
+                              "Give me a puzzle and I'll suggest a typo to "
+                              "fix it...",
                           hintStyle: TextStyle(color: AppColors.textGray),
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.all(16),
@@ -92,7 +93,9 @@ class InputArea extends StatelessWidget {
                         child: Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
                               decoration: BoxDecoration(
                                 color: AppColors.backgroundDark.withValues(
                                   alpha: 0.5,
