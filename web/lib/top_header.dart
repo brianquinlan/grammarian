@@ -39,10 +39,10 @@ class TopHeader extends StatelessWidget {
                         color: AppColors.primary.withValues(alpha: 0.2),
                       ),
                     ),
-                    child: const Icon(
-                      Icons.shield,
-                      color: AppColors.primary,
-                      size: 20,
+                    padding: const EdgeInsets.all(4), // Add padding for the image
+                    child: Image.asset(
+                      'assets/ring.png',
+                      fit: BoxFit.contain,
                     ),
                   ),
                   const SizedBox(width: 16),
