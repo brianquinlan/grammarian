@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sage of the Grammarian Login Final</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#9333ea", // A vibrant purple
+                        "primary-hover": "#7e22ce",
+                        "dark-bg": "#0f0c16",
+                    },
+                    fontFamily: {
+                        display: ["Cinzel", "serif"],
+                        body: ["Inter", "sans-serif"],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-15px)' },
+                        }
+                    }
+                },
+            },
+        };
+    </script>
+<style>
+        body {
+            background-color: #0f0c16;
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(88, 28, 135, 0.15), transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(124, 58, 237, 0.1), transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(17, 24, 39, 0), rgba(17, 24, 39, 0.4));
+        }
+        .glass-card {
+            background: rgba(20, 15, 35, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+        .glass-bubble {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="text-gray-200 font-body min-h-screen flex flex-col antialiased selection:bg-primary selection:text-white overflow-x-hidden">
+<main class="flex-grow flex items-center justify-center p-6 lg:p-12 relative w-full">
+<div class="absolute inset-0 overflow-hidden pointer-events-none">
+<div class="absolute top-[10%] left-[10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[100px] mix-blend-screen"></div>
+<div class="absolute bottom-[10%] right-[10%] w-[40%] h-[40%] bg-purple-900/20 rounded-full blur-[100px] mix-blend-screen"></div>
+</div>
+<div class="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center relative z-10">
+<div class="flex flex-col items-center lg:items-start space-y-8 order-1">
+<div class="relative group mx-auto lg:mx-0">
+<div class="absolute inset-0 bg-primary/30 rounded-full blur-3xl transform scale-75 group-hover:scale-90 transition-transform duration-700"></div>
+<img alt="Gnome Sage holding a magical purple ring" class="relative z-10 w-72 md:w-96 lg:w-[32rem] drop-shadow-[0_10px_30px_rgba(0,0,0,0.6)] animate-float" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjdD29ZkZDuw4tMlrIguHg_rRwnO61HrTFCeRzFH2IWmb6H9AJYz1V9kH9bYM-DnmbDG8Xs6_n_7cp0q_7dqaXHY2XzyCvtDVX2KjexqOTrgXQue3_945Urk1dKR1UN000g4TFTmV3h23Z5-LJ95mDQxR8uNz2zSY__PTr9qWqO3aSSbDle3-7H1x1_8A4hvsLuVOl78h7bAB9jWwHpG-D5I2lbRMUQNrAC22___iehu2I7H2O4-5rWn1TBzQcDDk8CQGd5XkKvvI"/>
+</div>
+<div class="glass-bubble p-6 md:p-8 rounded-2xl relative max-w-xl mx-auto lg:mx-0 animate-float" style="animation-delay: 1.5s;">
+<div class="absolute -top-3 left-1/2 lg:left-24 transform -translate-x-1/2 w-6 h-6 glass-bubble border-b-0 border-r-0 rotate-45 bg-[#171221]"></div>
+<h2 class="font-display text-lg font-bold text-primary mb-2 flex items-center gap-2">
+                        Greetings, traveler!
+                    </h2>
+<p class="text-gray-300 leading-relaxed font-light text-sm md:text-base">
+                        "Ah, I spot the glimmer of the Ring of the Grammarian upon your finger! A chaotic trinket, indeed. It grants you the power to alter a single letter of a spell’s name to birth a new enchantment. Describe your current predicament, and I shall instruct you on how to twist your vocabulary to survive it!"
+                    </p>
+</div>
+</div>
+<div class="w-full max-w-md mx-auto order-2">
+<div class="glass-card rounded-3xl p-8 md:p-12 relative overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_rgba(147,51,234,0.15)]">
+<div class="absolute -top-24 -right-24 w-48 h-48 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
+<div class="text-center mb-10 relative z-10">
+<h2 class="font-display text-3xl font-bold text-white">Welcome</h2>
+</div>
+<div class="space-y-5 relative z-10">
+<button class="w-full flex items-center justify-center gap-3 bg-primary hover:bg-primary-hover text-white py-4 px-4 rounded-xl transition-all duration-300 font-medium group shadow-lg shadow-primary/25 hover:shadow-primary/40 transform hover:-translate-y-0.5 border border-primary/40">
+<span class="bg-white/20 p-1.5 rounded-lg group-hover:bg-white/30 transition-colors">
+<i class="fab fa-google text-lg"></i>
+</span>
+<span class="text-lg tracking-wide font-display">Sign in with Google</span>
+</button>
+<button class="w-full flex items-center justify-center gap-3 bg-[#1877F2] hover:bg-[#1565c0] text-white py-4 px-4 rounded-xl transition-all duration-300 font-medium group shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transform hover:-translate-y-0.5 border border-blue-500/30">
+<span class="bg-white/20 p-1.5 rounded-lg group-hover:bg-white/30 transition-colors">
+<i class="fab fa-facebook-f text-lg w-5 text-center"></i>
+</span>
+<span class="text-lg tracking-wide font-display">Sign in with Facebook</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>
