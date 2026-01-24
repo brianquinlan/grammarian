@@ -1,6 +1,6 @@
+import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
 import 'package:grammarian_web/chat_area.dart';
 import 'package:grammarian_web/input_area.dart';
 import 'package:grammarian_web/sidebar.dart';
@@ -17,17 +17,19 @@ import 'package:uuid/uuid.dart';
 
 // --- Theme Constants ---
 class AppColors {
-  static const primary = Color(0xFF7f13ec);
-  static const backgroundDark = Color(0xFF131117);
-  static const backgroundLight = Color(0xFFf7f6f8);
-  static const surfaceDark = Color(0xFF1e1a24);
-  static const surfaceCard = Color(0xFF251e30);
+  static const primary = Color(0xFF9333ea); // Updated from login_page
+  static const primaryHover = Color(0xFF7e22ce);
+  static const backgroundDark = Color(0xFF0f0c16);
+  static const surfaceDark = Color(0xFF140f23); // Slightly lighter than bg
+  static const surfaceCard = Color(0xFF1e182a); // For cards/inputs
   static const surfaceBorder = Color(0xFF3b3047);
   static const textWhite = Colors.white;
-  static const textGray = Color(0xFFab9db9);
-  static const textLightGray = Color(0xFFe2e8f0);
+  static const textGray = Color(0xFF9ca3af); // standard gray-400
+  static const textLightGray = Color(0xFFe5e7eb); // standard gray-200
+  static const backgroundLight = Color(0xFFf7f6f8); // Kept for safety, unused?
 }
 
+// ... existing main() and MyApp ...
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
@@ -128,6 +130,7 @@ class MainLayout extends StatefulWidget {
 }
 
 class _MainLayoutState extends State<MainLayout> {
+  // ... existing state variables ...
   final _client = GrammarianClient(client: http.Client());
   List<ConversationSummary> _conversations = [];
   List<ModelInfo> _models = [];
@@ -154,6 +157,7 @@ class _MainLayoutState extends State<MainLayout> {
     super.dispose();
   }
 
+  // ... existing methods (_initAndLoad, _loadConversations, _loadModels, _selectConversation, _createNewConversation, _submitPrompt, _showError) ...
   Future<void> _initAndLoad() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -362,55 +366,106 @@ class _MainLayoutState extends State<MainLayout> {
         _pendingRequests.contains(_currentConversationId);
 
     return Scaffold(
-      body: Column(
+      backgroundColor: AppColors.backgroundDark,
+      body: Stack(
         children: [
-          const TopHeader(),
-          Expanded(
-            child: Row(
-              children: [
-                // Sidebar (Hidden on small screens, strictly following mock design)
-                if (MediaQuery.of(context).size.width > 768)
-                  SizedBox(
-                    width: 280,
-                    child: Sidebar(
-                      conversations: _conversations,
-                      currentId: _currentConversationId,
-                      onSelect: _selectConversation,
-                      onNew: _createNewConversation,
-                    ),
-                  ),
-                // Main Content
-                Expanded(
-                  child: Container(
-                    color: AppColors.backgroundDark,
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: ChatArea(
-                            conversation: _currentConversation,
-                            isLoading: isProcessing,
-                          ),
-                        ),
-                        if (!isProcessing)
-                          InputArea(
-                            controller: _promptController,
-                            focusNode: _focusNode,
-                            isLoading: _isFetching || isProcessing,
-                            onSubmit: _submitPrompt,
-                            models: _currentConversationId == null
-                                ? _models
-                                : [],
-                            selectedModel: _selectedModel,
-                            onModelChanged: (val) {
-                              setState(() => _selectedModel = val);
-                            },
-                          ),
-                      ],
-                    ),
-                  ),
+          // Background Gradient and Blobs
+          Positioned.fill(
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.center,
+                  radius: 1.0,
+                  colors: [
+                    Color.fromRGBO(17, 24, 39, 0.4),
+                    Color.fromRGBO(17, 24, 39, 0),
+                  ],
                 ),
-              ],
+              ),
             ),
+          ),
+          Positioned(
+            top: -100,
+            left: -100,
+            child: Container(
+              width: 500,
+              height: 500,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.primary.withValues(alpha: 0.15),
+              ),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+                child: Container(color: Colors.transparent),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -100,
+            right: -100,
+            child: Container(
+              width: 500,
+              height: 500,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.purple.shade900.withValues(alpha: 0.15),
+              ),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+                child: Container(color: Colors.transparent),
+              ),
+            ),
+          ),
+          
+          // Main UI Layer
+          Column(
+            children: [
+              const TopHeader(),
+              Expanded(
+                child: Row(
+                  children: [
+                    // Sidebar
+                    if (MediaQuery.of(context).size.width > 768)
+                      SizedBox(
+                        width: 280,
+                        child: Sidebar(
+                          conversations: _conversations,
+                          currentId: _currentConversationId,
+                          onSelect: _selectConversation,
+                          onNew: _createNewConversation,
+                        ),
+                      ),
+                    // Main Content
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: ChatArea(
+                              conversation: _currentConversation,
+                              isLoading: isProcessing,
+                            ),
+                          ),
+                          if (!isProcessing)
+                            InputArea(
+                              controller: _promptController,
+                              focusNode: _focusNode,
+                              isLoading: _isFetching || isProcessing,
+                              onSubmit: _submitPrompt,
+                              models: _currentConversationId == null
+                                  ? _models
+                                  : [],
+                              selectedModel: _selectedModel,
+                              onModelChanged: (val) {
+                                setState(() => _selectedModel = val);
+                              },
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),

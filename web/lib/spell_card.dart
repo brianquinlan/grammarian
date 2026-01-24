@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:grammarian_web/main.dart';
@@ -60,88 +61,96 @@ class SpellCard extends StatelessWidget {
         break;
     }
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceCard,
-        border: Border.all(color: AppColors.surfaceBorder),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceCard.withValues(alpha: 0.6), // Glassy
+            border: Border.all(
+              color: AppColors.surfaceBorder.withValues(alpha: 0.5),
+            ),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceBorder,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(iconData, color: iconColor),
+              Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceBorder.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(iconData, color: iconColor),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          gSpell.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: AppColors.textWhite,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          '${gSpell.level.jsonValue} ${gSpell.school.jsonValue}',
+                          style: TextStyle(
+                            color: textColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 10,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.copy,
+                      size: 20,
+                      color: AppColors.textGray,
+                    ),
+                    tooltip: 'Copy Markdown',
+                    onPressed: () => _copyToClipboard(context),
+                  ),
+                ],
               ),
-              const SizedBox(width: 12),
+              const SizedBox(height: 16),
+              _buildDetailRow('Casting Time', gSpell.castingTime),
+              _buildDetailRow('Range', gSpell.range),
+              _buildDetailRow('Components', gSpell.components),
+              _buildDetailRow('Duration', gSpell.duration),
+              _buildDetailRow('Original Spell', spell.originalSpellName),
+
+              const SizedBox(height: 12),
+              Divider(color: AppColors.surfaceBorder.withValues(alpha: 0.5)),
+              const SizedBox(height: 12),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      gSpell.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: AppColors.textWhite,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+                child: SingleChildScrollView(
+                  child: Text(
+                    gSpell.description,
+                    style: const TextStyle(
+                      color: Color(0xFFd0c6dc),
+                      fontSize: 12,
+                      height: 1.5,
                     ),
-                    Text(
-                      '${gSpell.level.jsonValue} ${gSpell.school.jsonValue}',
-                      style: TextStyle(
-                        color: textColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-              IconButton(
-                icon: const Icon(
-                  Icons.copy,
-                  size: 20,
-                  color: AppColors.textGray,
-                ),
-                tooltip: 'Copy Markdown',
-                onPressed: () => _copyToClipboard(context),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          _buildDetailRow('Casting Time', gSpell.castingTime),
-          _buildDetailRow('Range', gSpell.range),
-          _buildDetailRow('Components', gSpell.components),
-          _buildDetailRow('Duration', gSpell.duration),
-          _buildDetailRow('Original Spell', spell.originalSpellName),
-
-          const SizedBox(height: 12),
-          Divider(color: AppColors.surfaceBorder.withValues(alpha: 0.5)),
-          const SizedBox(height: 12),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Text(
-                gSpell.description,
-                style: const TextStyle(
-                  color: Color(0xFFd0c6dc),
-                  fontSize: 12,
-                  height: 1.5,
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

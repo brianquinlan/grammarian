@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:grammarian_web/main.dart';
 import 'package:grammarian_web/models.dart';
@@ -30,80 +31,89 @@ class Sidebar extends StatelessWidget {
         .toList();
     final others = conversations.where((c) => !today.contains(c)).toList();
 
-    return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFF0e0c11),
-        border: Border(right: BorderSide(color: AppColors.surfaceBorder)),
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: InkWell(
-              onTap: onNew,
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                  horizontal: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceCard,
-                  border: Border.all(color: AppColors.surfaceBorder),
+    return ClipRRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF0e0c11).withValues(alpha: 0.3), // More transparent
+            border: const Border(
+              right: BorderSide(color: AppColors.surfaceBorder),
+            ),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: InkWell(
+                  onTap: onNew,
                   borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Row(
-                  children: [
-                    Icon(Icons.add, color: AppColors.primary, size: 20),
-                    SizedBox(width: 12),
-                    Text(
-                      'New Scenario',
-                      style: TextStyle(
-                        color: AppColors.textLightGray,
-                        fontSize: 14,
-                      ),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 12,
                     ),
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceCard.withValues(alpha: 0.6), // Glassy
+                      border: Border.all(
+                        color: AppColors.surfaceBorder.withValues(alpha: 0.5),
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.add, color: AppColors.primary, size: 20),
+                        SizedBox(width: 12),
+                        Text(
+                          'New Scenario',
+                          style: TextStyle(
+                            color: AppColors.textLightGray,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  children: [
+                    if (today.isNotEmpty) ...[
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        child: Text(
+                          'TODAY',
+                          style: TextStyle(
+                            color: Color(0xFF554b60),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      ...today.map((c) => _buildNavItem(c, context)),
+                    ],
+                    if (others.isNotEmpty) ...[
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        child: Text(
+                          'HISTORY',
+                          style: TextStyle(
+                            color: Color(0xFF554b60),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      ...others.map((c) => _buildNavItem(c, context)),
+                    ],
                   ],
                 ),
               ),
-            ),
+            ],
           ),
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              children: [
-                if (today.isNotEmpty) ...[
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    child: Text(
-                      'TODAY',
-                      style: TextStyle(
-                        color: Color(0xFF554b60),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  ...today.map((c) => _buildNavItem(c, context)),
-                ],
-                if (others.isNotEmpty) ...[
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    child: Text(
-                      'HISTORY',
-                      style: TextStyle(
-                        color: Color(0xFF554b60),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  ...others.map((c) => _buildNavItem(c, context)),
-                ],
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -118,9 +128,9 @@ class Sidebar extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 2),
         decoration: isSelected
             ? BoxDecoration(
-                color: AppColors.surfaceBorder.withValues(alpha: 0.4),
+                color: AppColors.primary.withValues(alpha: 0.15), // Tinted primary
                 border: Border.all(
-                  color: AppColors.surfaceBorder.withValues(alpha: 0.5),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                 ),
                 borderRadius: BorderRadius.circular(8),
               )
@@ -130,7 +140,7 @@ class Sidebar extends StatelessWidget {
             Icon(
               isSelected ? Icons.chat_bubble : Icons.chat_bubble_outline,
               size: 18,
-              color: isSelected ? Colors.white : const Color(0xFF554b60),
+              color: isSelected ? AppColors.primary : const Color(0xFF554b60),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -139,6 +149,7 @@ class Sidebar extends StatelessWidget {
                 style: TextStyle(
                   color: isSelected ? Colors.white : const Color(0xFFab9db9),
                   fontSize: 14,
+                  fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

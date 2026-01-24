@@ -21,7 +21,7 @@ class ChatArea extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('assets/ring.png', width: 200, height: 200),
+            Image.asset('assets/sage.png', width: 250, height: 250),
             const SizedBox(height: 16),
             const Text(
               'Sage of the Grammarian',
@@ -81,8 +81,10 @@ class ChatArea extends StatelessWidget {
                       vertical: 14,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceCard,
-                      border: Border.all(color: AppColors.surfaceBorder),
+                      color: AppColors.surfaceCard.withValues(alpha: 0.6), // Glassy
+                      border: Border.all(
+                        color: AppColors.surfaceBorder.withValues(alpha: 0.5),
+                      ),
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(16),
                         topRight: Radius.circular(2),
