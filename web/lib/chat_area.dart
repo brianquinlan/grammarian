@@ -7,12 +7,22 @@ import 'package:grammarian_web/sage_avatar.dart';
 class ChatArea extends StatelessWidget {
   final Conversation? conversation;
   final bool isLoading;
+  final List<ModelInfo> models;
 
   const ChatArea({
     super.key,
     required this.conversation,
     required this.isLoading,
+    this.models = const [],
   });
+
+  String _getFriendlyModelName(String modelId) {
+    try {
+      return models.firstWhere((m) => m.model == modelId).name;
+    } catch (_) {
+      return modelId;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,75 +46,94 @@ class ChatArea extends StatelessWidget {
       );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-      itemCount: conversation!.dialog.length + (isLoading ? 1 : 0),
-      itemBuilder: (context, index) {
-        if (index >= conversation!.dialog.length) {
-          return const Padding(
-            padding: EdgeInsets.only(top: 24),
-            child: Row(
-              children: [
-                SageAvatar(),
-                SizedBox(width: 16),
-                SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ],
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 12, bottom: 4),
+          child: Text(
+            'Mode: ${_getFriendlyModelName(conversation!.model)}',
+            style: TextStyle(
+              color: AppColors.textGray.withValues(alpha: 0.3),
+              fontSize: 10,
+              letterSpacing: 0.5,
             ),
-          );
-        }
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            itemCount: conversation!.dialog.length + (isLoading ? 1 : 0),
+            itemBuilder: (context, index) {
+              if (index >= conversation!.dialog.length) {
+                return const Padding(
+                  padding: EdgeInsets.only(top: 24),
+                  child: Row(
+                    children: [
+                      SageAvatar(),
+                      SizedBox(width: 16),
+                      SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ],
+                  ),
+                );
+              }
 
-        final item = conversation!.dialog[index];
-        if (item is AdventurerPrompt) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 24),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 600),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 14,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceCard.withValues(
-                        alpha: 0.6,
-                      ), // Glassy
-                      border: Border.all(
-                        color: AppColors.surfaceBorder.withValues(alpha: 0.5),
-                      ),
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(16),
-                        topRight: Radius.circular(2),
-                        bottomLeft: Radius.circular(16),
-                        bottomRight: Radius.circular(16),
-                      ),
-                    ),
-                    child: SelectionArea(
-                      child: Text(
-                        item.utterance,
-                        style: const TextStyle(
-                          color: AppColors.textLightGray,
-                          fontSize: 15,
-                          height: 1.5,
+              final item = conversation!.dialog[index];
+              if (item is AdventurerPrompt) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 24),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 600),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 14,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.surfaceCard.withValues(
+                              alpha: 0.6,
+                            ), // Glassy
+                            border: Border.all(
+                              color: AppColors.surfaceBorder.withValues(
+                                alpha: 0.5,
+                              ),
+                            ),
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(16),
+                              topRight: Radius.circular(2),
+                              bottomLeft: Radius.circular(16),
+                              bottomRight: Radius.circular(16),
+                            ),
+                          ),
+                          child: SelectionArea(
+                            child: Text(
+                              item.utterance,
+                              style: const TextStyle(
+                                color: AppColors.textLightGray,
+                                fontSize: 15,
+                                height: 1.5,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                ),
-              ],
-            ),
-          );
-        } else if (item is SageOfTheGrammarianAnswer) {
-          return AssistantMessage(answer: item);
-        }
-        return const SizedBox.shrink();
-      },
+                );
+              } else if (item is SageOfTheGrammarianAnswer) {
+                return AssistantMessage(answer: item);
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      ],
     );
   }
 }

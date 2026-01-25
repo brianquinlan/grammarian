@@ -444,6 +444,7 @@ class _MainLayoutState extends State<MainLayout> {
                             child: ChatArea(
                               conversation: _currentConversation,
                               isLoading: isProcessing,
+                              models: _models,
                             ),
                           ),
                           if (!isProcessing)
