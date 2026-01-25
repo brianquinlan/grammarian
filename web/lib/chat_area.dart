@@ -4,7 +4,7 @@ import 'package:grammarian_web/main.dart';
 import 'package:grammarian_web/models.dart';
 import 'package:grammarian_web/sage_avatar.dart';
 
-class ChatArea extends StatelessWidget {
+class ChatArea extends StatefulWidget {
   final Conversation? conversation;
   final bool isLoading;
   final List<ModelInfo> models;
@@ -16,9 +16,49 @@ class ChatArea extends StatelessWidget {
     this.models = const [],
   });
 
+  @override
+  State<ChatArea> createState() => _ChatAreaState();
+}
+
+class _ChatAreaState extends State<ChatArea> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollToBottom();
+  }
+
+  @override
+  void didUpdateWidget(ChatArea oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.conversation != oldWidget.conversation ||
+        widget.isLoading != oldWidget.isLoading) {
+      _scrollToBottom();
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
   String _getFriendlyModelName(String modelId) {
     try {
-      return models.firstWhere((m) => m.model == modelId).name;
+      return widget.models.firstWhere((m) => m.model == modelId).name;
     } catch (_) {
       return modelId;
     }
@@ -26,7 +66,7 @@ class ChatArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (conversation == null) {
+    if (widget.conversation == null) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -51,7 +91,7 @@ class ChatArea extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(top: 12, bottom: 4),
           child: Text(
-            'Mode: ${_getFriendlyModelName(conversation!.model)}',
+            'Mode: ${_getFriendlyModelName(widget.conversation!.model)}',
             style: TextStyle(
               color: AppColors.textGray.withValues(alpha: 0.3),
               fontSize: 10,
@@ -61,10 +101,11 @@ class ChatArea extends StatelessWidget {
         ),
         Expanded(
           child: ListView.builder(
+            controller: _scrollController,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-            itemCount: conversation!.dialog.length + (isLoading ? 1 : 0),
+            itemCount: widget.conversation!.dialog.length + (widget.isLoading ? 1 : 0),
             itemBuilder: (context, index) {
-              if (index >= conversation!.dialog.length) {
+              if (index >= widget.conversation!.dialog.length) {
                 return const Padding(
                   padding: EdgeInsets.only(top: 24),
                   child: Row(
@@ -81,7 +122,7 @@ class ChatArea extends StatelessWidget {
                 );
               }
 
-              final item = conversation!.dialog[index];
+              final item = widget.conversation!.dialog[index];
               if (item is AdventurerPrompt) {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 24),
