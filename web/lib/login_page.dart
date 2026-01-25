@@ -6,6 +6,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:grammarian_web/footer.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -146,6 +147,9 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
+          
+          // Footer
+          const FooterLink(),
         ],
       ),
     );

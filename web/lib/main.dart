@@ -5,6 +5,7 @@ import 'package:grammarian_web/chat_area.dart';
 import 'package:grammarian_web/input_area.dart';
 import 'package:grammarian_web/sidebar.dart';
 import 'package:grammarian_web/top_header.dart';
+import 'package:grammarian_web/footer.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -467,6 +468,9 @@ class _MainLayoutState extends State<MainLayout> {
               ),
             ],
           ),
+
+          // Footer
+          const FooterLink(),
         ],
       ),
     );
