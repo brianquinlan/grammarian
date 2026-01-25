@@ -55,10 +55,12 @@ class RingOfTheGrammarianSpell(BaseModel):
 class SageOfTheGrammarianAnswer(BaseModel):
     answer_description: Annotated[
         str,
-        StringConstraints(min_length=30, max_length=200),
-    ] = Field(description='A description of the reasoning used to produce the ' 
-              'spells suggested by the sage. May include a description of the '
-              'assumptions made (such as character class or level) by the sage.')
+        StringConstraints(min_length=30, max_length=400),
+    ] = Field(description='A concise but whimsical description of the reasoning '
+              'used to produce the spells suggested by the sage. May include a '
+              'description of the assumptions made (such as character class or '
+              'level) by the sage. Should not duplicate information found in the '
+              "`grammarian_spell`'s descriptions.")
     grammarian_spells: list[RingOfTheGrammarianSpell] = Field(
         description="The spells suggested by the sage."
     )

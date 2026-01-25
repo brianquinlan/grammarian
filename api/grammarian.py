@@ -31,21 +31,15 @@ You cannot use a spell name that is already defined by the rules of Dungeon's an
 Dragons.
 
 Instead, you must use the rules of the Ring of the Grammarian to invent a new spell that
-has the wanted effect. All possible spell names will be provided
-by the given `spell_variations_as_dict` function.
+has the wanted effect. The variants for all of the spells defined by the Dungeons and
+Dragons core rules are below. If you have to generate variations for another spell,
+use the given `spell_variations_as_dict` function.
 
 The function, level, school, duration and range of the original spell has no influence
 on the new spell. Determine the school, duration and range of the new spell
 yourself based on the situation and your knowledge of other Dungeons and Dragon's
-spells. Determine the level of the new spell based on the `determine_level` function.
-If the prompt contains level constraints then you MUST use `determine_level` to determine
-the level of the new spell.
-
-The best approach is to start with all possible spells available to the owner of the ring
-and then use `spell_variations_as_dict` to generate all possible variations of those spells.
-It is important to generate as many variations as possible so provide as much input to
-`spell_variations_as_dict` as possible. If no spell restrictions are provide, ask for the
-variations for every spell in Dungeons & Dragons.
+spells. To determine the level of the new spell based on the `determine_level` function.
+You MUST use `determine_level` to determine the level of the new spell.
 
 Unless otherwise instructed, assume that the owner of the ring is able to use any spell
 available to their class from the Player's Handbook and other official sources.
@@ -54,8 +48,12 @@ Make sure that proposed spells are consistent with existing Dungeons and Dragons
 terms of spell level, duration, and range. In the description, make sure to include the what
 effect upcasting the spell has or, if it is a cantrip, what it does at higher levels.
 
-Unless otherwise specified, you should propose multiple spell variations.
-"""
+Unless otherwise specified, you should propose multiple spell variations. You can change the
+function of a spell that you proposed in a previous response.
+
+Below is a list of spells and a mapping to possible variations:
+
+""" + open('spell_name_variations.txt').read()
 
 _LEVELING_SYSTEM_PROMPT = """You are an expert designer of Dungeons & Dragons spells.
 
@@ -110,7 +108,6 @@ def spell_variations_as_dict(names: list[str]) -> dict[str, list[str]]:
     >>> spell_variations_as_dict(['cat', 'dog'])
     {'cat': ['at', 'bat'], 'dog': ['at', 'bat']}
     """
-    print(names)
     return {name: list(spell_variations(name)) for name in names}
 
 
@@ -124,9 +121,7 @@ async def determine_level(
 ) -> models.Level:
     """Determine the casting level of a spell based on the precedent provided by existing spells."""
     json = spell.model_dump_json(exclude={"level", "name"})
-    print(json)
     response = await ctx.deps.agent.run(json)
-    print(f"{spell.name} should be level {response.output.value}")
     return response.output
 
 
@@ -149,6 +144,7 @@ async def find_spells(
             Tool(spell_variations_as_dict, takes_ctx=False),
             Tool(determine_level, takes_ctx=True),
         ],
+        retries=3
     )
 
     response = await agent.run(
