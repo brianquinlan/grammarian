@@ -266,7 +266,7 @@ class _MainLayoutState extends State<MainLayout> {
           createdOn: DateTime.now(),
           name: '...',
           model: 'pending',
-          dialog: [UserPrompt(text: text)],
+          dialog: [AdventurerPrompt(utterance: text)],
         );
       } else {
         // For existing conversation, optimistically add user prompt to UI immediately if needed,
@@ -417,7 +417,7 @@ class _MainLayoutState extends State<MainLayout> {
               ),
             ),
           ),
-          
+
           // Main UI Layer
           Column(
             children: [

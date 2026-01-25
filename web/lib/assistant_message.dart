@@ -5,9 +5,9 @@ import 'package:grammarian_web/sage_avatar.dart';
 import 'package:grammarian_web/spell_card.dart';
 
 class AssistantMessage extends StatefulWidget {
-  final AppResponse response;
+  final SageOfTheGrammarianAnswer answer;
 
-  const AssistantMessage({super.key, required this.response});
+  const AssistantMessage({super.key, required this.answer});
 
   @override
   State<AssistantMessage> createState() => _AssistantMessageState();
@@ -24,7 +24,7 @@ class _AssistantMessageState extends State<AssistantMessage> {
 
   @override
   Widget build(BuildContext context) {
-    final sageAnswer = widget.response.sageAnswer;
+    final sageAnswer = widget.answer;
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: Row(

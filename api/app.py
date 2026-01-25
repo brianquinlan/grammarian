@@ -47,7 +47,7 @@ def get_user_id():
 @app.route("/models", methods=["GET"])
 async def list_models():
     models_list = [
-        models.ModelInfo(name=name, model=model)
+        models.ListModelsResponse.ModelInfo(name=name, model=model)
         for name, model in AVAILABLE_MODELS.items()
     ]
     return (
@@ -61,7 +61,7 @@ async def list_models():
 async def conversations():
     user_id = get_user_id()
     summaries = [
-        models.ConversationSummary(
+        models.ListConversationsResponse.ConversationSummary(
             conversation_id=c.conversation_id, name=c.name, created_on=c.created_on
         )
         for c in storage.get_conversations(user_id)
@@ -97,13 +97,13 @@ async def _respond(user_id: str, conversation: models.Conversation, description:
     conversation.all_messages = all_messages
     conversation.dialog.extend(
         [
-            models.UserPrompt(text=description),
-            models.AppResponse(sage_answer=sage_answer),
+            models.AdventurerPrompt(utterance=description),
+            sage_answer,
         ]
     )
     storage.save_conversation(user_id, conversation)
 
-    response = models.PromptResponse(
+    response = models.CreateOrUpdateConversationResponse(
         conversation_id=conversation.conversation_id, sage_answer=sage_answer
     )
     return response.model_dump_json(), 200, {"Content-Type": "application/json"}

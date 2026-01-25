@@ -67,7 +67,7 @@ class ChatArea extends StatelessWidget {
         }
 
         final item = conversation!.dialog[index];
-        if (item is UserPrompt) {
+        if (item is AdventurerPrompt) {
           return Padding(
             padding: const EdgeInsets.only(bottom: 24),
             child: Row(
@@ -81,7 +81,9 @@ class ChatArea extends StatelessWidget {
                       vertical: 14,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceCard.withValues(alpha: 0.6), // Glassy
+                      color: AppColors.surfaceCard.withValues(
+                        alpha: 0.6,
+                      ), // Glassy
                       border: Border.all(
                         color: AppColors.surfaceBorder.withValues(alpha: 0.5),
                       ),
@@ -94,7 +96,7 @@ class ChatArea extends StatelessWidget {
                     ),
                     child: SelectionArea(
                       child: Text(
-                        item.text,
+                        item.utterance,
                         style: const TextStyle(
                           color: AppColors.textLightGray,
                           fontSize: 15,
@@ -107,8 +109,8 @@ class ChatArea extends StatelessWidget {
               ],
             ),
           );
-        } else if (item is AppResponse) {
-          return AssistantMessage(response: item);
+        } else if (item is SageOfTheGrammarianAnswer) {
+          return AssistantMessage(answer: item);
         }
         return const SizedBox.shrink();
       },

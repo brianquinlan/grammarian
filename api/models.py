@@ -37,13 +37,8 @@ class Spell(BaseModel):
     casting_time: str
     range: str
     components: str
-
-    """
-    The duration of the spell.
-
-    For example, 'Concentration, up to 1 minute' or 'Instantaneous'.
-    """
-    duration: str
+    duration : str = Field(description='The duration of the spell. For example, '
+                           '"Concentration, up to 1 minute" or "Instantaneous".')
     description: str
 
 
@@ -69,12 +64,8 @@ class SageOfTheGrammarianAnswer(BaseModel):
     )
 
 
-class UserPrompt(BaseModel):
-    text: str
-
-
-class AppResponse(BaseModel):
-    sage_answer: SageOfTheGrammarianAnswer
+class AdventurerPrompt(BaseModel):
+    utterance: str
 
 
 class Conversation(BaseModel):
@@ -83,31 +74,29 @@ class Conversation(BaseModel):
     name: str = ""
     model: str = ""
     all_messages: list[ModelMessage] = []
-    dialog: list[UserPrompt | AppResponse] = []
+    dialog: list[AdventurerPrompt | SageOfTheGrammarianAnswer] = []
 
 
 # API results
 
 
-class ConversationSummary(BaseModel):
-    conversation_id: str
-    created_on: datetime.datetime
-    name: str
-
-
 class ListConversationsResponse(BaseModel):
+    class ConversationSummary(BaseModel):
+        conversation_id: str
+        created_on: datetime.datetime
+        name: str
+
     conversations: list[ConversationSummary]
 
 
-class PromptResponse(BaseModel):
+class CreateOrUpdateConversationResponse(BaseModel):
     conversation_id: str
     sage_answer: SageOfTheGrammarianAnswer
 
 
-class ModelInfo(BaseModel):
-    name: str
-    model: str
-
-
 class ListModelsResponse(BaseModel):
+    class ModelInfo(BaseModel):
+        name: str
+        model: str
+
     models: list[ModelInfo]

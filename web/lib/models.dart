@@ -104,7 +104,7 @@ class RingOfTheGrammarianSpell {
   }
 }
 
-class SageOfTheGrammarianAnswer {
+class SageOfTheGrammarianAnswer extends ConversationItem {
   final String answerDescription;
   final List<RingOfTheGrammarianSpell> grammarianSpells;
 
@@ -177,36 +177,22 @@ abstract class ConversationItem {
   ConversationItem();
 
   factory ConversationItem.fromJson(Map<String, dynamic> json) {
-    if (json.containsKey('text')) {
-      return UserPrompt.fromJson(json);
-    } else if (json.containsKey('sage_answer')) {
-      return AppResponse.fromJson(json);
+    if (json.containsKey('utterance')) {
+      return AdventurerPrompt.fromJson(json);
+    } else if (json.containsKey('answer_description')) {
+      return SageOfTheGrammarianAnswer.fromJson(json);
     }
     throw FormatException('Unknown conversation item type: ${json.keys}');
   }
 }
 
-class UserPrompt extends ConversationItem {
-  final String text;
+class AdventurerPrompt extends ConversationItem {
+  final String utterance;
 
-  UserPrompt({required this.text});
+  AdventurerPrompt({required this.utterance});
 
-  factory UserPrompt.fromJson(Map<String, dynamic> json) {
-    return UserPrompt(text: json['text'] as String);
-  }
-}
-
-class AppResponse extends ConversationItem {
-  final SageOfTheGrammarianAnswer sageAnswer;
-
-  AppResponse({required this.sageAnswer});
-
-  factory AppResponse.fromJson(Map<String, dynamic> json) {
-    return AppResponse(
-      sageAnswer: SageOfTheGrammarianAnswer.fromJson(
-        json['sage_answer'] as Map<String, dynamic>,
-      ),
-    );
+  factory AdventurerPrompt.fromJson(Map<String, dynamic> json) {
+    return AdventurerPrompt(utterance: json['utterance'] as String);
   }
 }
 

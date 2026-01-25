@@ -152,26 +152,24 @@ void main() {
             "name": "Conv 1",
             "model": "gpt-4",
             "dialog": [
-              {"text": "hello"},
+              {"utterance": "hello"},
               {
-                "sage_answer": {
-                  "answer_description": "Here is a test spell.",
-                  "grammarian_spells": [
-                    {
-                      "original_spell_name": "Test Spell",
-                      "grammarian_spell": {
-                        "name": "Test Spell",
-                        "school": "Evocation",
-                        "level": "3rd",
-                        "casting_time": "1 action",
-                        "range": "150 feet",
-                        "components": "V, S, M",
-                        "duration": "Instantaneous",
-                        "description": "A test spell.",
-                      },
+                "answer_description": "Here is a test spell.",
+                "grammarian_spells": [
+                  {
+                    "original_spell_name": "Test Spell",
+                    "grammarian_spell": {
+                      "name": "Test Spell",
+                      "school": "Evocation",
+                      "level": "3rd",
+                      "casting_time": "1 action",
+                      "range": "150 feet",
+                      "components": "V, S, M",
+                      "duration": "Instantaneous",
+                      "description": "A test spell.",
                     },
-                  ],
-                },
+                  },
+                ],
               },
             ],
           }),
@@ -187,11 +185,11 @@ void main() {
     expect(response, isA<Conversation>());
     expect(response.conversationId, 'c1');
     expect(response.dialog.length, 2);
-    expect(response.dialog[0], isA<UserPrompt>());
-    expect((response.dialog[0] as UserPrompt).text, 'hello');
-    expect(response.dialog[1], isA<AppResponse>());
+    expect(response.dialog[0], isA<AdventurerPrompt>());
+    expect((response.dialog[0] as AdventurerPrompt).utterance, 'hello');
+    expect(response.dialog[1], isA<SageOfTheGrammarianAnswer>());
     expect(
-      (response.dialog[1] as AppResponse).sageAnswer.grammarianSpells.length,
+      (response.dialog[1] as SageOfTheGrammarianAnswer).grammarianSpells.length,
       1,
     );
   });
