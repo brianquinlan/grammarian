@@ -265,7 +265,7 @@ class _MainLayoutState extends State<MainLayout> {
           conversationId: tempId,
           createdOn: DateTime.now(),
           name: '...',
-          model: 'pending',
+          model: _selectedModel!,
           dialog: [AdventurerPrompt(utterance: text)],
         );
       } else {
