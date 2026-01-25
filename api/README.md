@@ -16,6 +16,7 @@ To run the API server on Linux or macOS:
 
 ```bash
 export GOOGLE_API_KEY="XXX"  # Replace XXX with a real API key
+export OPENAI_API_KEY="XXX"  # Replace XXX with a real API key
 export FIREBASE_AUTH_EMULATOR_HOST="127.0.0.1:9099"
 export FIRESTORE_EMULATOR_HOST="127.0.0.1:8080"
 python app.py

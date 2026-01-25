@@ -4,3 +4,5 @@ firebase-admin
 hypercorn
 pydantic
 pydantic-ai
+openai
+
