@@ -37,7 +37,7 @@ class _AssistantMessageState extends State<AssistantMessage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'The Sage',
+                  'The Sage of the Grammarian',
                   style: TextStyle(
                     color: AppColors.textWhite,
                     fontWeight: FontWeight.w600,

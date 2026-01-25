@@ -24,15 +24,6 @@ class ChatArea extends StatelessWidget {
             Image.asset('assets/sage.png', width: 250, height: 250),
             const SizedBox(height: 16),
             const Text(
-              'Sage of the Grammarian',
-              style: TextStyle(
-                fontSize: 18,
-                color: AppColors.textWhite,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
               'The Ring of the Grammarian allows you to change one letter '
               'of a spell\'s name to create a new effect.\nDescribe a '
               'situation, and I will suggest the perfect Grammarian '

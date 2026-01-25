@@ -17,7 +17,9 @@ class TopHeader extends StatelessWidget {
           height: 64,
           padding: const EdgeInsets.symmetric(horizontal: 24),
           decoration: BoxDecoration(
-            color: AppColors.backgroundDark.withValues(alpha: 0.2), // More transparent
+            color: AppColors.backgroundDark.withValues(
+              alpha: 0.2,
+            ), // More transparent
             border: Border(
               bottom: BorderSide(
                 color: AppColors.surfaceBorder.withValues(alpha: 0.5),
@@ -39,16 +41,16 @@ class TopHeader extends StatelessWidget {
                         color: AppColors.primary.withValues(alpha: 0.2),
                       ),
                     ),
-                    padding: const EdgeInsets.all(4), // Add padding for the image
-                    child: Image.asset(
-                      'assets/ring.png',
-                      fit: BoxFit.contain,
-                    ),
+                    padding: const EdgeInsets.all(
+                      4,
+                    ), // Add padding for the image
+                    child: Image.asset('assets/ring.png', fit: BoxFit.contain),
                   ),
                   const SizedBox(width: 16),
                   Text(
-                    'Grammarian Sage',
-                    style: GoogleFonts.cinzel( // Updated font
+                    'The Sage of the Grammarian',
+                    style: GoogleFonts.cinzel(
+                      // Updated font
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textWhite,
@@ -83,7 +85,11 @@ class TopHeader extends StatelessWidget {
                       onTap: () => FirebaseAuth.instance.signOut(),
                       child: const Row(
                         children: [
-                          Icon(Icons.logout, size: 18, color: AppColors.textGray),
+                          Icon(
+                            Icons.logout,
+                            size: 18,
+                            color: AppColors.textGray,
+                          ),
                           SizedBox(width: 8),
                           Text(
                             'Log out',
