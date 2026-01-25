@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:grammarian_web/footer.dart';
@@ -58,42 +57,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> _signInWithFacebook() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-
-    try {
-      if (kIsWeb) {
-        FacebookAuthProvider facebookProvider = FacebookAuthProvider();
-        await FirebaseAuth.instance.signInWithPopup(facebookProvider);
-      } else {
-        final LoginResult result = await FacebookAuth.instance.login();
-        if (result.status == LoginStatus.success) {
-          final OAuthCredential credential =
-              FacebookAuthProvider.credential(result.accessToken!.tokenString);
-          await FirebaseAuth.instance.signInWithCredential(credential);
-        } else if (result.status == LoginStatus.cancelled) {
-          setState(() => _isLoading = false);
-          return;
-        } else {
-          throw Exception(result.message);
-        }
-      }
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Facebook Sign-In failed: $e';
-      });
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
   // --- UI Constants & Styles ---
 
   static const Color _primaryColor = Color(0xFF9333ea);
@@ -110,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
         children: [
           // Background Layers
           _buildBackground(),
-          
+
           // Main Content
           Center(
             child: SingleChildScrollView(
@@ -136,7 +99,9 @@ class _LoginPageState extends State<LoginPage> {
                           Expanded(child: _buildSageSection(isMobile: false)),
                           const SizedBox(width: 96), // gap-24
                           ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 448), // max-w-md
+                            constraints: const BoxConstraints(
+                              maxWidth: 448,
+                            ), // max-w-md
                             child: _buildLoginCard(),
                           ),
                         ],
@@ -147,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-          
+
           // Footer
           const FooterLink(),
         ],
@@ -211,7 +176,9 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildSageSection({required bool isMobile}) {
     return Column(
-      crossAxisAlignment: isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+      crossAxisAlignment: isMobile
+          ? CrossAxisAlignment.center
+          : CrossAxisAlignment.start,
       children: [
         // Image Container
         Stack(
@@ -255,7 +222,9 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: BoxDecoration(
                     color: const Color(0xFFFFFFFF).withValues(alpha: 0.03),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.1),
+                    ),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.2),
@@ -296,16 +265,22 @@ class _LoginPageState extends State<LoginPage> {
               left: isMobile ? 0 : 96,
               right: isMobile ? 0 : null,
               child: Center(
-                 child: Transform.rotate(
+                child: Transform.rotate(
                   angle: 0.785398, // 45 degrees
                   child: Container(
                     width: 24,
                     height: 24,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF171221), // Closest approximation to blended bg
+                      color: const Color(
+                        0xFF171221,
+                      ), // Closest approximation to blended bg
                       border: Border(
-                        top: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
-                        left: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+                        top: BorderSide(
+                          color: Colors.white.withValues(alpha: 0.1),
+                        ),
+                        left: BorderSide(
+                          color: Colors.white.withValues(alpha: 0.1),
+                        ),
                       ),
                     ),
                   ),
@@ -340,10 +315,9 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-               // Glow effect behind title (approximated)
-               // Absolute positioning is tricky inside a column without a stack wrapper for the whole card content,
-               // but the mock has it top-right. Let's simplify and put a glow behind the text or just skip the specific corner blob for cleaner code.
-               
+              // Glow effect behind title (approximated)
+              // Absolute positioning is tricky inside a column without a stack wrapper for the whole card content,
+              // but the mock has it top-right. Let's simplify and put a glow behind the text or just skip the specific corner blob for cleaner code.
               Text(
                 'Welcome',
                 style: GoogleFonts.cinzel(
@@ -353,7 +327,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(height: 40),
-              
+
               if (_errorMessage != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 20),
@@ -365,7 +339,9 @@ class _LoginPageState extends State<LoginPage> {
                 ),
 
               if (_isLoading)
-                 const Center(child: CircularProgressIndicator(color: _primaryColor))
+                const Center(
+                  child: CircularProgressIndicator(color: _primaryColor),
+                )
               else ...[
                 _buildSocialButton(
                   text: 'Sign in with Google',
@@ -375,16 +351,6 @@ class _LoginPageState extends State<LoginPage> {
                   textColor: Colors.white,
                   borderColor: _primaryColor.withValues(alpha: 0.4),
                   onPressed: _signInWithGoogle,
-                ),
-                const SizedBox(height: 20),
-                _buildSocialButton(
-                  text: 'Sign in with Facebook',
-                  icon: FontAwesomeIcons.facebookF,
-                  color: const Color(0xFF1877F2),
-                  hoverColor: const Color(0xFF1565c0),
-                  textColor: Colors.white,
-                  borderColor: const Color(0xFF1877F2).withValues(alpha: 0.3),
-                  onPressed: _signInWithFacebook,
                 ),
               ],
             ],
@@ -405,17 +371,17 @@ class _LoginPageState extends State<LoginPage> {
   }) {
     // Note: Flutter's standard buttons don't have built-in hover color transitions quite like CSS.
     // We can use ButtonStyle with WidgetStateProperty.
-    
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-             color: color.withValues(alpha: 0.25),
-             blurRadius: 10,
-             offset: const Offset(0, 4),
-          )
-        ]
+            color: color.withValues(alpha: 0.25),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: ElevatedButton(
         onPressed: onPressed,
@@ -426,11 +392,15 @@ class _LoginPageState extends State<LoginPage> {
             }
             return color;
           }),
-          padding: WidgetStateProperty.all(const EdgeInsets.symmetric(vertical: 20, horizontal: 16)),
-          shape: WidgetStateProperty.all(RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: borderColor),
-          )),
+          padding: WidgetStateProperty.all(
+            const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+          ),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(color: borderColor),
+            ),
+          ),
           elevation: WidgetStateProperty.all(0), // Handled by container shadow
         ),
         child: Row(
