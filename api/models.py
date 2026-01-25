@@ -81,6 +81,7 @@ class Conversation(BaseModel):
 
 
 class ListConversationsResponse(BaseModel):
+    """Response to `GET /conversations`."""
     class ConversationSummary(BaseModel):
         conversation_id: str
         created_on: datetime.datetime
@@ -89,12 +90,23 @@ class ListConversationsResponse(BaseModel):
     conversations: list[ConversationSummary]
 
 
+class GetConversationResponse(BaseModel):
+    """Response to `GET /conversations/<conversation_id>`."""
+    conversation_id: str
+    created_on: datetime.datetime = Field(default_factory=datetime.datetime.now)
+    name: str = ""
+    model: str = ""
+    dialog: list[AdventurerPrompt | SageOfTheGrammarianAnswer] = []
+
+
 class CreateOrUpdateConversationResponse(BaseModel):
+    """Response to `<PUT|POST> /conversations/<conversation_id>`."""
     conversation_id: str
     sage_answer: SageOfTheGrammarianAnswer
 
 
 class ListModelsResponse(BaseModel):
+    """Response to `GET /models`."""
     class ModelInfo(BaseModel):
         name: str
         model: str

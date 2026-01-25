@@ -79,6 +79,11 @@ async def conversations():
 async def get_conversation(conversation_id: str):
     user_id = get_user_id()
     conversation = storage.get_conversation(user_id, conversation_id)
+
+    response = models.GetConversationResponse(conversation_id=conversation.conversation_id,
+                                              created_on=conversation.created_on,
+                                              name = conversation.name,
+                                              model=conversation.model)
     return conversation.model_dump_json(), 200, {"Content-Type": "application/json"}
 
 
