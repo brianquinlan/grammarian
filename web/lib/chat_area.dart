@@ -8,12 +8,14 @@ class ChatArea extends StatefulWidget {
   final Conversation? conversation;
   final bool isLoading;
   final List<ModelInfo> models;
+  final bool geekMode;
 
   const ChatArea({
     super.key,
     required this.conversation,
     required this.isLoading,
     this.models = const [],
+    this.geekMode = false,
   });
 
   @override
@@ -103,7 +105,8 @@ class _ChatAreaState extends State<ChatArea> {
           child: ListView.builder(
             controller: _scrollController,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-            itemCount: widget.conversation!.dialog.length + (widget.isLoading ? 1 : 0),
+            itemCount:
+                widget.conversation!.dialog.length + (widget.isLoading ? 1 : 0),
             itemBuilder: (context, index) {
               if (index >= widget.conversation!.dialog.length) {
                 return const Padding(
@@ -168,7 +171,10 @@ class _ChatAreaState extends State<ChatArea> {
                   ),
                 );
               } else if (item is SageOfTheGrammarianAnswer) {
-                return AssistantMessage(answer: item);
+                return AssistantMessage(
+                  answer: item,
+                  geekMode: widget.geekMode,
+                );
               }
               return const SizedBox.shrink();
             },

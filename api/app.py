@@ -83,8 +83,9 @@ async def get_conversation(conversation_id: str):
     response = models.GetConversationResponse(conversation_id=conversation.conversation_id,
                                               created_on=conversation.created_on,
                                               name = conversation.name,
-                                              model=conversation.model)
-    return conversation.model_dump_json(), 200, {"Content-Type": "application/json"}
+                                              model=conversation.model,
+                                              dialog=conversation.dialog)
+    return response.model_dump_json(), 200, {"Content-Type": "application/json"}
 
 
 async def _respond(user_id: str, conversation: models.Conversation, description: str):
@@ -160,6 +161,32 @@ async def update_conversation(conversation_id: str):
 
     conversation = storage.get_conversation(user_id, conversation_id)
     return await _respond(user_id, conversation, description)
+
+
+
+@app.route("/settings", methods=["GET"])
+async def get_settings():
+    user_id = get_user_id()
+    try:
+        settings = storage.get_user_settings(user_id)
+    except Exception:
+        # If settings don't exist, return defaults
+        settings = models.UserSettings()
+    
+    return settings.model_dump_json(), 200, {"Content-Type": "application/json"}
+
+
+@app.route("/settings", methods=["PUT"])
+async def update_settings():
+    user_id = get_user_id()
+    data = await request.get_json()
+    
+    try:
+        settings = models.UserSettings.model_validate(data)
+        storage.save_user_settings(user_id, settings)
+        return settings.model_dump_json(), 200, {"Content-Type": "application/json"}
+    except Exception as e:
+        abort(400, description=str(e))
 
 
 if __name__ == "__main__":

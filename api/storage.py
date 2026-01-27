@@ -11,6 +11,19 @@ def _get_client() -> firestore.Client:
         _client = firestore.Client(project='arcana-check')
     return _client
 
+def get_user_settings(user_id: str) -> models.UserSettings:
+    settings_ref = _get_client().collection("users").document(user_id)
+    doc = cast(firestore.DocumentSnapshot, settings_ref.get())
+    if not doc.exists:
+        raise Exception('does not exist')
+    return models.UserSettings.model_validate(doc.to_dict())
+
+
+def save_user_settings(user_id: str, settings: models.UserSettings):
+    settings_ref = _get_client().collection("users").document(user_id)
+    settings_ref.set(settings.model_dump(mode='json'))
+
+
 def _get_user_conversations(user_id: str) -> firestore.CollectionReference:
     return _get_client().collection("users").document(user_id).collection("conversations")
 
@@ -29,7 +42,6 @@ def get_conversation(user_id: str, conversation_id: str) -> models.Conversation:
     return models.Conversation.model_validate(doc.to_dict())
 
 def save_conversation(user_id: str, conversation: models.Conversation):
-    conversation.model_dump(mode='json')
     conversations = _get_user_conversations(user_id)
     conversation_ref = conversations.document(conversation.conversation_id)
     conversation_ref.set(

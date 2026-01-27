@@ -258,3 +258,17 @@ class ListModelsResponse {
     );
   }
 }
+
+class UserSettings {
+  final bool geekMode;
+
+  UserSettings({this.geekMode = false});
+
+  factory UserSettings.fromJson(Map<String, dynamic> json) {
+    return UserSettings(geekMode: json['geek_mode'] as bool? ?? false);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'geek_mode': geekMode};
+  }
+}

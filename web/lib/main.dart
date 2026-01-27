@@ -141,6 +141,7 @@ class _MainLayoutState extends State<MainLayout> {
   final Set<String> _pendingRequests = {};
   final Map<String, Conversation> _pendingConversationState = {};
   bool _isFetching = false;
+  bool _geekMode = false;
   final TextEditingController _promptController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   final _uuid = const Uuid();
@@ -165,7 +166,11 @@ class _MainLayoutState extends State<MainLayout> {
       try {
         final token = await user.getIdToken();
         _client.authToken = token;
-        await Future.wait([_loadConversations(), _loadModels()]);
+        await Future.wait([
+          _loadConversations(),
+          _loadModels(),
+          _loadSettings(),
+        ]);
       } catch (e) {
         if (mounted) _showError('Error initializing session: $e');
       }
@@ -197,6 +202,20 @@ class _MainLayoutState extends State<MainLayout> {
       }
     } catch (e) {
       if (mounted) _showError('Error loading models: $e');
+    }
+  }
+
+  Future<void> _loadSettings() async {
+    try {
+      final settings = await _client.getSettings();
+      if (mounted) {
+        setState(() {
+          _geekMode = settings.geekMode;
+        });
+      }
+    } catch (e) {
+      // Silently fail for settings, or log debug
+      debugPrint('Error loading settings: $e');
     }
   }
 
@@ -421,7 +440,7 @@ class _MainLayoutState extends State<MainLayout> {
           // Main UI Layer
           Column(
             children: [
-              const TopHeader(),
+              TopHeader(onSettingsChanged: _loadSettings),
               Expanded(
                 child: Row(
                   children: [
@@ -445,6 +464,7 @@ class _MainLayoutState extends State<MainLayout> {
                               conversation: _currentConversation,
                               isLoading: isProcessing,
                               models: _models,
+                              geekMode: _geekMode,
                             ),
                           ),
                           if (!isProcessing)

@@ -7,8 +7,13 @@ import 'package:grammarian_web/usage_widget.dart';
 
 class AssistantMessage extends StatefulWidget {
   final SageOfTheGrammarianAnswer answer;
+  final bool geekMode;
 
-  const AssistantMessage({super.key, required this.answer});
+  const AssistantMessage({
+    super.key,
+    required this.answer,
+    this.geekMode = false,
+  });
 
   @override
   State<AssistantMessage> createState() => _AssistantMessageState();
@@ -46,8 +51,8 @@ class _AssistantMessageState extends State<AssistantMessage> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                UsageWidget(usage: sageAnswer.usage),
-                const SizedBox(height: 4),
+                if (widget.geekMode) UsageWidget(usage: sageAnswer.usage),
+                if (widget.geekMode) const SizedBox(height: 4),
                 SelectionArea(
                   child: Text(
                     sageAnswer.answerDescription,

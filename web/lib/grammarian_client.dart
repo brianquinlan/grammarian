@@ -111,4 +111,33 @@ class GrammarianClient {
       throw Exception('Failed to load models: ${response.statusCode}');
     }
   }
+
+  Future<UserSettings> getSettings() async {
+    final uri = Uri.parse('$baseUrl/settings');
+    final response = await client.get(uri, headers: _headers);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonMap = jsonDecode(response.body);
+      return UserSettings.fromJson(jsonMap);
+    } else {
+      throw Exception('Failed to load settings: ${response.statusCode}');
+    }
+  }
+
+  Future<UserSettings> updateSettings(UserSettings settings) async {
+    final uri = Uri.parse('$baseUrl/settings');
+    final headers = {..._headers, 'Content-Type': 'application/json'};
+    final response = await client.put(
+      uri,
+      headers: headers,
+      body: jsonEncode(settings.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonMap = jsonDecode(response.body);
+      return UserSettings.fromJson(jsonMap);
+    } else {
+      throw Exception('Failed to update settings: ${response.statusCode}');
+    }
+  }
 }

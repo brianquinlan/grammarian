@@ -3,9 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:grammarian_web/main.dart';
+import 'package:grammarian_web/settings_dialog.dart';
 
 class TopHeader extends StatelessWidget {
-  const TopHeader({super.key});
+  final VoidCallback? onSettingsChanged;
+
+  const TopHeader({super.key, this.onSettingsChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +84,29 @@ class TopHeader extends StatelessWidget {
                         : null,
                   ),
                   itemBuilder: (context) => [
+                    PopupMenuItem(
+                      onTap: () async {
+                        await showDialog(
+                          context: context,
+                          builder: (context) => const SettingsDialog(),
+                        );
+                        onSettingsChanged?.call();
+                      },
+                      child: const Row(
+                        children: [
+                          Icon(
+                            Icons.settings,
+                            size: 18,
+                            color: AppColors.textGray,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            'Settings',
+                            style: TextStyle(color: AppColors.textGray),
+                          ),
+                        ],
+                      ),
+                    ),
                     PopupMenuItem(
                       onTap: () => FirebaseAuth.instance.signOut(),
                       child: const Row(

@@ -83,6 +83,10 @@ class Conversation(BaseModel):
     dialog: list[AdventurerPrompt | SageOfTheGrammarianAnswer] = []
 
 
+class UserSettings(BaseModel):
+    geek_mode: bool = False
+
+
 # API results
 
 
