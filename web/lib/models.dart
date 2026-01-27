@@ -107,10 +107,12 @@ class RingOfTheGrammarianSpell {
 class SageOfTheGrammarianAnswer extends ConversationItem {
   final String answerDescription;
   final List<RingOfTheGrammarianSpell> grammarianSpells;
+  final Map<String, Object> usage;
 
   SageOfTheGrammarianAnswer({
     required this.answerDescription,
     required this.grammarianSpells,
+    this.usage = const {},
   });
 
   factory SageOfTheGrammarianAnswer.fromJson(Map<String, dynamic> json) {
@@ -119,6 +121,9 @@ class SageOfTheGrammarianAnswer extends ConversationItem {
       grammarianSpells: RingOfTheGrammarianSpell.listFromJson(
         json['grammarian_spells'] as List<dynamic>,
       ),
+      usage:
+          (json['usage'] as Map<String, dynamic>?)?.cast<String, Object>() ??
+          {},
     );
   }
 }

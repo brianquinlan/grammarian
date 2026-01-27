@@ -79,4 +79,21 @@ void main() {
     expect(s3.grammarianSpell.school, School.illusion);
     expect(s3.grammarianSpell.level, Level.third);
   });
+
+  test('Parses SageOfTheGrammarianAnswer with usage', () {
+    final json = {
+      'answer_description': 'description',
+      'grammarian_spells': [],
+      'usage': {'prompt_tokens': 10, 'completion_tokens': 20},
+    };
+    final answer = SageOfTheGrammarianAnswer.fromJson(json);
+    expect(answer.usage['prompt_tokens'], 10);
+    expect(answer.usage['completion_tokens'], 20);
+  });
+
+  test('Parses SageOfTheGrammarianAnswer without usage', () {
+    final json = {'answer_description': 'description', 'grammarian_spells': []};
+    final answer = SageOfTheGrammarianAnswer.fromJson(json);
+    expect(answer.usage, isEmpty);
+  });
 }

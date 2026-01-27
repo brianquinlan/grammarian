@@ -14,7 +14,8 @@ _LETTERS = string.ascii_lowercase
 _WORDS = set(w.lower().strip() for w in open("words.txt").readlines())
 
 
-_SYSTEM_PROMPT = """
+_SYSTEM_PROMPT = (
+    """
 You are a wise sage and your special area of knowledge is the Ring of the Grammarian.
 People come to you for advice on how to solve their problems using their
 Rings of the Grammarian.
@@ -53,7 +54,9 @@ function of a spell that you proposed in a previous response.
 
 Below is a list of spells and a mapping to possible variations:
 
-""" + open('spell_name_variations.txt').read()
+"""
+    + open("spell_name_variations.txt").read()
+)
 
 _LEVELING_SYSTEM_PROMPT = """You are an expert designer of Dungeons & Dragons spells.
 
@@ -138,13 +141,13 @@ async def find_spells(
     agent = Agent(
         model,
         system_prompt=_SYSTEM_PROMPT,
-        output_type=models.SageOfTheGrammarianAnswer,
+        output_type=models.SageOfTheGrammarianAnswerModel,
         deps_type=Dependencies,
         tools=[
             Tool(spell_variations_as_dict, takes_ctx=False),
             Tool(determine_level, takes_ctx=True),
         ],
-        retries=3
+        retries=3,
     )
 
     response = await agent.run(
@@ -152,4 +155,8 @@ async def find_spells(
         message_history=model_messages,
         deps=Dependencies(agent=leveling_agent),
     )
-    return response.all_messages(), response.output
+    return response.all_messages(), models.SageOfTheGrammarianAnswer(
+        answer_description=response.output.answer_description,
+        grammarian_spells=response.output.grammarian_spells,
+        usage=dataclasses.asdict(response.usage()),
+    )

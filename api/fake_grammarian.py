@@ -143,4 +143,12 @@ async def find_spells(
     return [], models.SageOfTheGrammarianAnswer(
         answer_description="You were wise to ask me, here are some ideas",
         grammarian_spells=selected_spells,
+        usage=dict(
+            requests=2,
+            tool_calls=3,
+            input_tokens=len(description),
+            cache_write_tokens=5,
+            cache_read_tokens=6,
+            output_tokens=23,
+        ),
     )

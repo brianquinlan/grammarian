@@ -3,6 +3,7 @@ import 'package:grammarian_web/main.dart';
 import 'package:grammarian_web/models.dart';
 import 'package:grammarian_web/sage_avatar.dart';
 import 'package:grammarian_web/spell_card.dart';
+import 'package:grammarian_web/usage_widget.dart';
 
 class AssistantMessage extends StatefulWidget {
   final SageOfTheGrammarianAnswer answer;
@@ -44,7 +45,9 @@ class _AssistantMessageState extends State<AssistantMessage> {
                     fontSize: 14,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
+                UsageWidget(usage: sageAnswer.usage),
+                const SizedBox(height: 4),
                 SelectionArea(
                   child: Text(
                     sageAnswer.answerDescription,

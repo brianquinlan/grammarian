@@ -1,6 +1,6 @@
 import datetime
 import enum
-from typing import Annotated
+from typing import Annotated, Any
 
 from pydantic import BaseModel, Field, StringConstraints
 from pydantic_ai import ModelMessage
@@ -52,7 +52,7 @@ class RingOfTheGrammarianSpell(BaseModel):
     )
 
 
-class SageOfTheGrammarianAnswer(BaseModel):
+class SageOfTheGrammarianAnswerModel(BaseModel):
     answer_description: Annotated[
         str,
         StringConstraints(min_length=30, max_length=400),
@@ -64,6 +64,10 @@ class SageOfTheGrammarianAnswer(BaseModel):
     grammarian_spells: list[RingOfTheGrammarianSpell] = Field(
         description="The spells suggested by the sage."
     )
+
+
+class SageOfTheGrammarianAnswer(SageOfTheGrammarianAnswerModel):
+    usage : dict[str, int] = {}
 
 
 class AdventurerPrompt(BaseModel):
