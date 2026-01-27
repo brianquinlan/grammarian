@@ -67,7 +67,7 @@ class SageOfTheGrammarianAnswerModel(BaseModel):
 
 
 class SageOfTheGrammarianAnswer(SageOfTheGrammarianAnswerModel):
-    usage : dict[str, int] = {}
+    usage : dict[str, Any] = {}
 
 
 class AdventurerPrompt(BaseModel):
