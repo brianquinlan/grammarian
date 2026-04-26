@@ -44,6 +44,20 @@ def get_user_id():
         abort(401, description="Invalid token")
 
 
+def optional_user_id():
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return None
+
+    token = auth_header.split("Bearer ")[1]
+    try:
+        decoded_token = auth.verify_id_token(token)
+        return decoded_token["uid"]
+    except Exception as e:
+        print(f"Auth error: {e}")
+        return None
+
+
 @app.route("/models", methods=["GET"])
 async def list_models():
     models_list = [
@@ -77,18 +91,18 @@ async def conversations():
 
 @app.route("/conversation/<conversation_id>", methods=["GET"])
 async def get_conversation(conversation_id: str):
-    user_id = get_user_id()
-    conversation = storage.get_conversation(user_id, conversation_id)
+    conversation = storage.get_conversation(conversation_id)
 
     response = models.GetConversationResponse(conversation_id=conversation.conversation_id,
                                               created_on=conversation.created_on,
                                               name = conversation.name,
                                               model=conversation.model,
+                                              owner_id=conversation.owner_id,
                                               dialog=conversation.dialog)
     return response.model_dump_json(), 200, {"Content-Type": "application/json"}
 
 
-async def _respond(user_id: str, conversation: models.Conversation, description: str):
+async def _respond(conversation: models.Conversation, description: str):
     if app.config.get("NO_LLM"):
         all_messages, sage_answer = await fake_grammarian.find_spells(
             description,
@@ -107,7 +121,7 @@ async def _respond(user_id: str, conversation: models.Conversation, description:
             sage_answer,
         ]
     )
-    storage.save_conversation(user_id, conversation)
+    storage.save_conversation(conversation)
 
     response = models.CreateOrUpdateConversationResponse(
         conversation_id=conversation.conversation_id, sage_answer=sage_answer
@@ -145,9 +159,9 @@ async def create_conversation(conversation_id: str):
         existing_titles=existing_titles,
     )
     conversation = models.Conversation(
-        conversation_id=conversation_id, name=title, model=model_name
+        conversation_id=conversation_id, name=title, model=model_name, owner_id=user_id
     )
-    return await _respond(user_id, conversation, description)
+    return await _respond(conversation, description)
 
 
 @app.route("/conversation/<conversation_id>", methods=["POST"])
@@ -159,8 +173,10 @@ async def update_conversation(conversation_id: str):
     if not description:
         abort(400, description="description is required")
 
-    conversation = storage.get_conversation(user_id, conversation_id)
-    return await _respond(user_id, conversation, description)
+    conversation = storage.get_conversation(conversation_id)
+    if conversation.owner_id != user_id:
+        abort(403, description="Forbidden")
+    return await _respond(conversation, description)
 
 
 

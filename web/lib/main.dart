@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import 'grammarian_client.dart';
 import 'models.dart';
 import 'login_page.dart';
@@ -81,12 +82,54 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late final GoRouter _router;
+
+  @override
+  void initState() {
+    super.initState();
+    _router = GoRouter(
+      initialLocation: '/',
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) {
+            return StreamBuilder<User?>(
+              stream: FirebaseAuth.instance.authStateChanges(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasData) {
+                  return const MainLayout();
+                }
+                return const LoginPage();
+              },
+            );
+          },
+        ),
+        GoRoute(
+          path: '/:id',
+          builder: (context, state) {
+            final id = state.pathParameters['id'];
+            return MainLayout(initialConversationId: id);
+          },
+        ),
+      ],
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
+      routerConfig: _router,
       title: 'Grammarian Sage',
       debugShowCheckedModeBanner: false,
       scrollBehavior: const MaterialScrollBehavior().copyWith(
@@ -110,21 +153,13 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
         useMaterial3: true,
       ),
-      home: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return const MainLayout();
-          }
-          return const LoginPage();
-        },
-      ),
     );
   }
 }
 
 class MainLayout extends StatefulWidget {
-  const MainLayout({super.key});
+  final String? initialConversationId;
+  const MainLayout({super.key, this.initialConversationId});
 
   @override
   State<MainLayout> createState() => _MainLayoutState();
@@ -161,19 +196,33 @@ class _MainLayoutState extends State<MainLayout> {
 
   // ... existing methods (_initAndLoad, _loadConversations, _loadModels, _selectConversation, _createNewConversation, _submitPrompt, _showError) ...
   Future<void> _initAndLoad() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      try {
-        final token = await user.getIdToken();
-        _client.authToken = token;
-        await Future.wait([
-          _loadConversations(),
-          _loadModels(),
-          _loadSettings(),
-        ]);
-      } catch (e) {
-        if (mounted) _showError('Error initializing session: $e');
+    FirebaseAuth.instance.authStateChanges().listen((user) async {
+      if (!mounted) return;
+      if (user != null) {
+        try {
+          final token = await user.getIdToken();
+          _client.authToken = token;
+          await Future.wait([
+            _loadConversations(),
+            _loadModels(),
+            _loadSettings(),
+          ]);
+        } catch (e) {
+          if (mounted) _showError('Error initializing session: $e');
+        }
+      } else {
+        _client.authToken = null;
+        setState(() {
+          _conversations = [];
+        });
+        await _loadModels();
       }
+    });
+
+    if (widget.initialConversationId != null) {
+      _selectConversation(widget.initialConversationId!);
+    } else {
+      _createNewConversation();
     }
   }
 
@@ -241,14 +290,14 @@ class _MainLayoutState extends State<MainLayout> {
     } catch (e) {
       if (mounted) _showError('Error loading conversation: $e');
     } finally {
-      setState(() => _isFetching = false);
+      if (mounted) {
+        setState(() => _isFetching = false);
+      }
     }
   }
 
   void _createNewConversation() {
     setState(() {
-      _currentConversationId = null;
-      _currentConversation = null;
       _currentConversationId = null;
       _currentConversation = null;
       _promptController.clear();
@@ -257,6 +306,14 @@ class _MainLayoutState extends State<MainLayout> {
         _selectedModel = _models.first.model;
       }
     });
+  }
+
+  void _onSelectConversationFromSidebar(String id) {
+    context.go('/$id');
+  }
+
+  void _onNewConversationFromSidebar() {
+    context.go('/');
   }
 
   Future<void> _submitPrompt(String text) async {
@@ -285,6 +342,7 @@ class _MainLayoutState extends State<MainLayout> {
           createdOn: DateTime.now(),
           name: '...',
           model: _selectedModel!,
+          ownerId: FirebaseAuth.instance.currentUser?.uid ?? '',
           dialog: [AdventurerPrompt(utterance: text)],
         );
       } else {
@@ -337,6 +395,7 @@ class _MainLayoutState extends State<MainLayout> {
           if (_currentConversationId == tempId) {
             _currentConversationId = fullConversation.conversationId;
             _currentConversation = fullConversation;
+            context.go('/${fullConversation.conversationId}');
           }
         });
       } else {
@@ -451,8 +510,8 @@ class _MainLayoutState extends State<MainLayout> {
                         child: Sidebar(
                           conversations: _conversations,
                           currentId: _currentConversationId,
-                          onSelect: _selectConversation,
-                          onNew: _createNewConversation,
+                          onSelect: _onSelectConversationFromSidebar,
+                          onNew: _onNewConversationFromSidebar,
                         ),
                       ),
                     // Main Content
@@ -472,6 +531,9 @@ class _MainLayoutState extends State<MainLayout> {
                               controller: _promptController,
                               focusNode: _focusNode,
                               isLoading: _isFetching || isProcessing,
+                              readOnly: FirebaseAuth.instance.currentUser == null ||
+                                  (_currentConversation != null &&
+                                      _currentConversation!.ownerId != FirebaseAuth.instance.currentUser?.uid),
                               onSubmit: _submitPrompt,
                               models: _currentConversationId == null
                                   ? _models

@@ -79,6 +79,7 @@ class Conversation(BaseModel):
     created_on: datetime.datetime = Field(default_factory=datetime.datetime.now)
     name: str = ""
     model: str = ""
+    owner_id: str = ""
     all_messages: list[ModelMessage] = []
     dialog: list[AdventurerPrompt | SageOfTheGrammarianAnswer] = []
 
@@ -106,6 +107,7 @@ class GetConversationResponse(BaseModel):
     created_on: datetime.datetime = Field(default_factory=datetime.datetime.now)
     name: str = ""
     model: str = ""
+    owner_id: str = ""
     dialog: list[AdventurerPrompt | SageOfTheGrammarianAnswer] = []
 
 

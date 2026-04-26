@@ -8,6 +8,7 @@ class InputArea extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final bool isLoading;
+  final bool readOnly;
   final Function(String) onSubmit;
   final List<ModelInfo> models;
   final String? selectedModel;
@@ -18,6 +19,7 @@ class InputArea extends StatelessWidget {
     required this.controller,
     required this.focusNode,
     required this.isLoading,
+    this.readOnly = false,
     required this.onSubmit,
     this.models = const [],
     this.selectedModel,
@@ -64,13 +66,13 @@ class InputArea extends StatelessWidget {
                     CallbackShortcuts(
                       bindings: {
                         const SingleActivator(LogicalKeyboardKey.enter): () {
-                          if (!isLoading) onSubmit(controller.text);
+                          if (!isLoading && !readOnly) onSubmit(controller.text);
                         },
                       },
                       child: TextField(
                         controller: controller,
                         focusNode: focusNode,
-                        readOnly: isLoading,
+                        readOnly: isLoading || readOnly,
                         maxLines: 4,
                         minLines: 1,
                         style: const TextStyle(color: Colors.white),
@@ -83,7 +85,7 @@ class InputArea extends StatelessWidget {
                           contentPadding: EdgeInsets.all(16),
                         ),
                         onSubmitted: (text) {
-                          if (!isLoading) onSubmit(text);
+                          if (!isLoading && !readOnly) onSubmit(text);
                         },
                       ),
                     ),

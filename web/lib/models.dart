@@ -206,6 +206,7 @@ class Conversation {
   final DateTime createdOn;
   final String name;
   final String model;
+  final String ownerId;
   final List<ConversationItem> dialog;
 
   Conversation({
@@ -213,6 +214,7 @@ class Conversation {
     required this.createdOn,
     required this.name,
     required this.model,
+    required this.ownerId,
     required this.dialog,
   });
 
@@ -222,6 +224,7 @@ class Conversation {
       createdOn: DateTime.parse(json['created_on'] as String),
       name: json['name'] as String? ?? '',
       model: json['model'] as String? ?? '',
+      ownerId: json['owner_id'] as String? ?? '',
       dialog:
           (json['dialog'] as List<dynamic>?)
               ?.map((e) => ConversationItem.fromJson(e as Map<String, dynamic>))
