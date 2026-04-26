@@ -341,7 +341,7 @@ class _MainLayoutState extends State<MainLayout> {
           conversationId: tempId,
           createdOn: DateTime.now(),
           name: '...',
-          model: _selectedModel!,
+          model: _selectedModel ?? '',
           ownerId: FirebaseAuth.instance.currentUser?.uid ?? '',
           dialog: [AdventurerPrompt(utterance: text)],
         );
@@ -364,7 +364,7 @@ class _MainLayoutState extends State<MainLayout> {
         response = await _client.createConversation(
           tempId,
           text,
-          _selectedModel ?? 'gemini-1.5-flash',
+          _selectedModel,
         );
       } else {
         response = await _client.updateConversation(currentId, text);

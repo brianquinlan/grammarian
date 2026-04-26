@@ -22,15 +22,17 @@ class GrammarianClient {
   Future<PromptResponse> createConversation(
     String conversationId,
     String description,
-    String model,
+    [String? model]
   ) async {
     final uri = Uri.parse('$baseUrl/conversation/$conversationId');
 
     final Map<String, dynamic> body = {
       'conversation_id': conversationId,
       'description': description,
-      'model': model,
     };
+    if (model != null) {
+      body['model'] = model;
+    }
 
     final headers = {..._headers, 'Content-Type': 'application/json'};
 

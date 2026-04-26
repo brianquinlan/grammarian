@@ -8,7 +8,7 @@ import models
 import storage
 import titler
 from firebase_admin import auth
-from model_factory import get_model, AVAILABLE_MODELS
+from model_factory import get_model, AVAILABLE_MODELS, DEFAULT_MODEL
 from quart import Quart, abort, request
 
 # Initialize Firebase Admin
@@ -145,7 +145,7 @@ async def create_conversation(conversation_id: str):
 
     model_name = data.get("model")
     if not model_name:
-        abort(400, description="model is required")
+        model_name = DEFAULT_MODEL
 
 
     if app.config.get("NO_LLM"):
