@@ -5,13 +5,15 @@ from pydantic_ai.providers.openai import OpenAIProvider
 
 
 AVAILABLE_MODELS = {
-    "Gemini 3.1 Pro": "gemini-3.1-pro-preview",
-    "Gemini 3 Flash": "gemini-3-flash",
+    "Gemini 3.1 Pro Preview": "gemini-3.1-pro-preview",
+    "Gemini 3 Flash Preview": "gemini-3-flash-preview",
+    "Gemini 2.5 Pro": "gemini-2.5-pro",
+    "Gemini 2.5 Flash": "gemini-2.5-flash",
     "GPT-5.5": "gpt-5.5",
     "GPT-5 Pro": "gpt-5-pro",
 }
 
-DEFAULT_MODEL = "gemini-3-flash"
+DEFAULT_MODEL = "gemini-2.5-flash"
 
 def get_model(model_name: str | None = None) -> GoogleModel | OpenAIChatModel:
     if not model_name:

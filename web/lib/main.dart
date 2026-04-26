@@ -194,6 +194,20 @@ class _MainLayoutState extends State<MainLayout> {
     super.dispose();
   }
 
+  @override
+  void didUpdateWidget(MainLayout oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialConversationId != oldWidget.initialConversationId) {
+      if (widget.initialConversationId != null) {
+        if (_currentConversationId != widget.initialConversationId) {
+          _selectConversation(widget.initialConversationId!);
+        }
+      } else {
+        _createNewConversation();
+      }
+    }
+  }
+
   // ... existing methods (_initAndLoad, _loadConversations, _loadModels, _selectConversation, _createNewConversation, _submitPrompt, _showError) ...
   Future<void> _initAndLoad() async {
     FirebaseAuth.instance.authStateChanges().listen((user) async {
@@ -345,12 +359,8 @@ class _MainLayoutState extends State<MainLayout> {
           ownerId: FirebaseAuth.instance.currentUser?.uid ?? '',
           dialog: [AdventurerPrompt(utterance: text)],
         );
-      } else {
-        // For existing conversation, optimistically add user prompt to UI immediately if needed,
-        // but current implementation relies on server response.
-        // Let's at least clear input so user knows it's sent.
-        _promptController.clear();
       }
+      _promptController.clear();
       _pendingConversationState[currentId] = _currentConversation!;
     });
 
@@ -419,6 +429,11 @@ class _MainLayoutState extends State<MainLayout> {
               _currentConversationId = null;
               _currentConversation = null;
             }
+            _promptController.text = text;
+          });
+        } else {
+          setState(() {
+            _promptController.text = text;
           });
         }
       }

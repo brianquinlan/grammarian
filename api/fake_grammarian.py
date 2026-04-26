@@ -131,7 +131,7 @@ GRAMMARIAN_SPELLS = [
 
 async def find_spells(
     description: str,
-    model_messages: list[ModelMessage] | None = [],
+    model_messages: list[ModelMessage] | None = None,
     delay: float = 2.0,
 ) -> Tuple[list[ModelMessage], models.SageOfTheGrammarianAnswer]:
     await asyncio.sleep(delay)

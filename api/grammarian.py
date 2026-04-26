@@ -131,7 +131,7 @@ async def determine_level(
 async def find_spells(
     model: Model,
     description: str,
-    model_messages: list[ModelMessage] | None = [],
+    model_messages: list[ModelMessage] | None = None,
 ) -> Tuple[list[ModelMessage], models.SageOfTheGrammarianAnswer]:
     leveling_agent = Agent(
         model,

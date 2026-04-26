@@ -91,7 +91,10 @@ async def conversations():
 
 @app.route("/conversation/<conversation_id>", methods=["GET"])
 async def get_conversation(conversation_id: str):
-    conversation = storage.get_conversation(conversation_id)
+    try:
+        conversation = storage.get_conversation(conversation_id)
+    except Exception:
+        abort(404, description="Conversation not found")
 
     response = models.GetConversationResponse(conversation_id=conversation.conversation_id,
                                               created_on=conversation.created_on,
@@ -173,7 +176,10 @@ async def update_conversation(conversation_id: str):
     if not description:
         abort(400, description="description is required")
 
-    conversation = storage.get_conversation(conversation_id)
+    try:
+        conversation = storage.get_conversation(conversation_id)
+    except Exception:
+        abort(404, description="Conversation not found")
     if conversation.owner_id != user_id:
         abort(403, description="Forbidden")
     return await _respond(conversation, description)
